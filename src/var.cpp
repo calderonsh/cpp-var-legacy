@@ -122,14 +122,39 @@ var var::operator =(var param)
 
 var var::operator +(var param)
 {
-	var retval = this->atofi();
-	param = param.atofi();
+	var retval = *this;
 
 	switch(retval.type)
 	{
+		case VAR_STRING:
+			switch(param.type)
+			{
+				case VAR_STRING:
+					retval.internal_string += param.internal_string;
+					retval.type = VAR_STRING;
+
+					return retval;
+
+				case VAR_INTEGER:
+					retval.internal_string += param.cpp_string();
+					retval.type = VAR_STRING;
+
+					return retval;
+
+				case VAR_FLOAT:
+					retval.internal_string += param.cpp_string();
+					retval.type = VAR_STRING;
+
+					return retval;
+			}
+
 		case VAR_INTEGER:
 			switch(param.type)
 			{
+				case VAR_STRING:
+
+					return retval + param.atofi();
+
 				case VAR_INTEGER:
 					retval.internal_long += param.internal_long;
 					retval.type = VAR_INTEGER;
@@ -146,6 +171,10 @@ var var::operator +(var param)
 		case VAR_FLOAT:
 			switch(param.type)
 			{
+				case VAR_STRING:
+
+					return retval + param.atofi();
+
 				case VAR_INTEGER:
 					retval.internal_double += param.internal_long;
 					retval.type = VAR_FLOAT;
@@ -165,14 +194,17 @@ var var::operator +(var param)
 
 var var::operator -(var param)
 {
-	var retval = atofi();
-	param = param.atofi();
+	var retval = this->atofi();
 
 	switch(retval.type)
 	{
 		case VAR_INTEGER:
 			switch(param.type)
 			{
+				case VAR_STRING:
+
+					return retval - param.atofi();
+
 				case VAR_INTEGER:
 					retval.internal_long -= param.internal_long;
 					retval.type = VAR_INTEGER;
@@ -189,6 +221,10 @@ var var::operator -(var param)
 		case VAR_FLOAT:
 			switch(param.type)
 			{
+				case VAR_STRING:
+
+					return retval - param.atofi();
+
 				case VAR_INTEGER:
 					retval.internal_double -= param.internal_long;
 					retval.type = VAR_FLOAT;
@@ -208,14 +244,17 @@ var var::operator -(var param)
 
 var var::operator *(var param)
 {
-	var retval = atofi();
-	param = param.atofi();
+	var retval = this->atofi();
 
 	switch(retval.type)
 	{
 		case VAR_INTEGER:
 			switch(param.type)
 			{
+				case VAR_STRING:
+
+					return retval * param.atofi();
+
 				case VAR_INTEGER:
 					retval.internal_long *= param.internal_long;
 					retval.type = VAR_INTEGER;
@@ -232,6 +271,10 @@ var var::operator *(var param)
 		case VAR_FLOAT:
 			switch(param.type)
 			{
+				case VAR_STRING:
+
+					return retval * param.atofi();
+
 				case VAR_INTEGER:
 					retval.internal_double *= param.internal_long;
 					retval.type = VAR_FLOAT;
@@ -251,14 +294,17 @@ var var::operator *(var param)
 
 var var::operator /(var param)
 {
-	var retval = atofi();
-	param = param.atofi();
+	var retval = this->atofi();
 
 	switch(retval.type)
 	{
 		case VAR_INTEGER:
 			switch(param.type)
 			{
+				case VAR_STRING:
+
+					return retval / param.atofi();
+
 				case VAR_INTEGER:
 					retval.internal_double = (double)retval.internal_long / param.internal_long;
 					retval.internal_long = (long)retval.internal_double;
@@ -276,6 +322,10 @@ var var::operator /(var param)
 		case VAR_FLOAT:
 			switch(param.type)
 			{
+				case VAR_STRING:
+
+					return retval / param.atofi();
+
 				case VAR_INTEGER:
 					retval.internal_double /= param.internal_long;
 					retval.type = VAR_FLOAT;
@@ -699,11 +749,11 @@ string var::cpp_string()
 			return  internal_string;
 
 		case VAR_INTEGER:
-			sprintf(buffer,"%li",internal_long);
+			sprintf(buffer,"%li", internal_long);
 			break;
 
 		case VAR_FLOAT:
-			sprintf(buffer,"%f",internal_double);
+			sprintf(buffer,"%f", internal_double);
 			break;
 
 		default:

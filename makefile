@@ -1,7 +1,7 @@
 
 MAJOR=0
-MINOR=0
-PATCH=1
+MINOR=1
+PATCH=0
 
 all: clean var.o main
 
@@ -16,7 +16,7 @@ deb: var.o
 	echo Depends: g++ >> deb/DEBIAN/control
 	echo Description: CPP-VAR is a library that implements dynamically typed variables for C++. >> deb/DEBIAN/control
 	echo \ CPP-VAR is intended to facilitate the portability of scripts and programs from >> deb/DEBIAN/control
-	echo \ other languages ​​to C + +, and accelerate the development of other facilities >> deb/DEBIAN/control
+	echo \ other languages ​​to C++, and accelerate the development of other facilities >> deb/DEBIAN/control
 	echo \ deploying languages ​​and frameworks for the syntax and robustness of C++ and STL. >> deb/DEBIAN/control
 
 	mkdir -p deb/usr/include
@@ -28,11 +28,11 @@ deb: var.o
 	rm -rf deb
 
 main:
-	g++ lib/var.o main.cpp -O2 -s -I include -o main -std=c++0x
+	g++ lib/var.o main.cpp -O2 -s -I include -o main
 
 var.o:
 	mkdir -p lib
-	g++ src/* -O2 -s -I include -c -Wall -o lib/var.o -std=c++0x
+	g++ src/* -O2 -s -I include -c -Wall -o lib/var.o
 
 clean:
 	rm -rf lib main

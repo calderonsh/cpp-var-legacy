@@ -7,18 +7,15 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	var myVar;
-		myVar["one"]   = "um";
-		myVar["two"]   = "dois";
-		myVar["three"] = "três";
+	var myVar1 = 5;
+	var myVar2 = "5";
+	var myVar3;
 
-		myVar << "quatro";
-		myVar << "cinco";
+	myVar3 = myVar1 + myVar2;
+	cout<< myVar3.cpp_string() << endl;
 
-	cout << myVar.cpp_map().size() << endl;
-
-	for(var::internal_map_type::iterator it = myVar.cpp_map().begin(); it != myVar.cpp_map().end(); it++)
-		cout<< ((var)(it->first)).cpp_string() << " " << (it->second).cpp_string() << endl;
+	myVar3 = myVar2 + myVar1;
+	cout<< myVar3.cpp_string() << endl;
 
 	return 0;
 }
