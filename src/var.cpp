@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #include <sstream>
-#include <map>
+#include <list>
 using namespace std;
 
 #include "var.hpp"
@@ -17,6 +17,7 @@ var::var(int param)
 	internal_long = param;
 	type = VAR_INTEGER;
 }
+
 var::var(long param)
 {
 	internal_long = param;
@@ -404,19 +405,20 @@ bool var::operator ==(var param)
 		break;
 
 		case VAR_NULL:
-		{
 			switch(param.type)
 			{
 				case VAR_INTEGER:
 					return 0 == param.internal_long;
+
 				case VAR_FLOAT:
 					return 0 == param.internal_double;
+
 				case VAR_STRING:
 					return (0 == param.c_double());
+
 				case VAR_NULL:
 					return true;
 			}
-		}
 		break;
 	}
 
@@ -651,7 +653,15 @@ var& var::operator[](var param)
 		type = VAR_MAP;
 	}
 
-	return (var&)(internal_map[param]);
+	internal_map_type::iterator iterador;
+	for(iterador = internal_map.begin(); iterador != internal_map.end(); iterador++)
+		if(iterador->first == param)
+			return (var&)(iterador->second);
+
+
+	internal_map.push_back(pair<var, var>(param,var()));
+
+	return (var&)(operator[](param));
 }
 
 var& var::operator <<(var param)
@@ -661,16 +671,10 @@ var& var::operator <<(var param)
 		type = VAR_MAP;
 	}
 
-	map<var,var>::iterator iterador;
+	int last = internal_map.back().first.c_long() + 1;
 
-	for(int i = 0; true; i++)
-	{
-		if(internal_map.find(i) == internal_map.end())
-		{
-			internal_map[i] = param;
-			return *this;
-		}
-	}
+	internal_map.push_back(pair< var,var>(last, param));
+	return (var&)(operator[](last));
 }
 
 var var::atofi()

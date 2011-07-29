@@ -10,16 +10,9 @@ enum {
 	VAR_RESOURCE
 };
 
-class var{
-	private:
-		struct var_cmp {
-			bool operator()(var a, var b) const {
-				return a < b;
-			}
-		};
-
+class var {
 	public:
-		typedef map <var,var, var_cmp> internal_map_type;
+		typedef list < pair<var, var> > internal_map_type;
 
 	private:
 		unsigned type;
@@ -34,7 +27,6 @@ class var{
 		var atofi();
 
 	public:
-
 		var();
 
 		var(int);
