@@ -3,6 +3,7 @@
 
 enum {
 	VAR_NULL,
+	VAR_BOOLEAN,
 	VAR_INTEGER,
 	VAR_FLOAT,
 	VAR_STRING,
@@ -17,6 +18,7 @@ class var {
 	private:
 		unsigned type;
 
+		bool	internal_bool;
 		long	internal_long;
 		double	internal_double;
 		string	internal_string;
@@ -24,11 +26,12 @@ class var {
 
 		internal_map_type internal_map;
 
-		var atofi();
+		var num();
 
 	public:
 		var();
 
+		var(bool);
 		var(int);
 		var(long);
 		var(double);
@@ -51,11 +54,13 @@ class var {
 		bool operator <(var);
 		bool operator >(var);
 		bool operator &&(var);
+		bool operator ||(var);
+
+		long operator &(var);
 		long operator |(var);
 
 		var& operator [](var);
 		var& operator <<(var);
-
 
 		long c_long();
 		double c_double();

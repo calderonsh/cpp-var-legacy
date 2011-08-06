@@ -7,15 +7,19 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	var myVar1 = 5;
-	var myVar2 = "5";
-	var myVar3;
+	var myVar;
 
-	myVar3 = myVar1 + myVar2;
-	cout<< myVar3.cpp_string() << endl;
+	myVar = (var) true + 0;
+	cout << myVar.cpp_string() << endl;
 
-	myVar3 = myVar2 + myVar1;
-	cout<< myVar3.cpp_string() << endl;
+	myVar = (var) true + 1;
+	cout << myVar.cpp_string() << endl;
+
+	myVar = (var) true * 0;
+	cout << myVar.cpp_string() << endl;
+
+	myVar = (var) true * 1;
+	cout <<myVar .cpp_string() << endl;
 
 	return 0;
 }

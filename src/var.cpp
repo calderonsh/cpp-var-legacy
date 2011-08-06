@@ -8,8 +8,15 @@ using namespace std;
 #include "var.hpp"
 
 
-var::var() {
+var::var()
+{
 	type = VAR_NULL;
+}
+
+var::var(bool param)
+{
+	internal_bool = param;
+	type = VAR_BOOLEAN;
 }
 
 var::var(int param)
@@ -52,6 +59,11 @@ void var::reset()
 {
 	switch(type)
 	{
+		case VAR_BOOLEAN:
+			internal_bool = false;
+
+			break;
+
 		case VAR_STRING:
 			internal_string = "";
 
@@ -64,7 +76,6 @@ void var::reset()
 
 		case VAR_FLOAT:
 			internal_double = 0;
-
 			break;
 
 		case VAR_MAP:
@@ -74,6 +85,8 @@ void var::reset()
 
 		case VAR_RESOURCE:
 			internal_resource = NULL;
+
+			break;
 	}
 
 	type = VAR_NULL;
@@ -85,6 +98,12 @@ var var::operator =(var param)
 
 	switch(param.type)
 	{
+		case VAR_BOOLEAN:
+			internal_bool = param.internal_bool;
+			type = VAR_BOOLEAN;
+
+			break;
+
 		case VAR_STRING:
 			internal_string = param.internal_string;
 			type = VAR_STRING;
@@ -116,6 +135,7 @@ var var::operator =(var param)
 
 		case VAR_NULL:
 			type=VAR_NULL;
+
 	}
 
 	return param;
@@ -127,6 +147,29 @@ var var::operator +(var param)
 
 	switch(retval.type)
 	{
+		case VAR_BOOLEAN:
+			switch(param.type)
+			{
+				case VAR_BOOLEAN:
+					retval.internal_bool = internal_bool || param.internal_bool;
+					retval.type = VAR_BOOLEAN;
+
+					return retval;
+
+				case VAR_INTEGER:
+					retval.internal_bool = internal_bool || param.internal_long;
+					retval.type = VAR_BOOLEAN;
+
+					return retval;
+
+				case VAR_FLOAT:
+					retval.internal_bool = internal_bool || param.internal_double;
+					retval.type = VAR_BOOLEAN;
+
+					return retval;
+			}
+			break;
+
 		case VAR_STRING:
 			switch(param.type)
 			{
@@ -148,13 +191,14 @@ var var::operator +(var param)
 
 					return retval;
 			}
+			break;
 
 		case VAR_INTEGER:
 			switch(param.type)
 			{
 				case VAR_STRING:
 
-					return retval + param.atofi();
+					return retval + param.num();
 
 				case VAR_INTEGER:
 					retval.internal_long += param.internal_long;
@@ -168,13 +212,14 @@ var var::operator +(var param)
 
 					return retval;
 			}
+			break;
 
 		case VAR_FLOAT:
 			switch(param.type)
 			{
 				case VAR_STRING:
 
-					return retval + param.atofi();
+					return retval + param.num();
 
 				case VAR_INTEGER:
 					retval.internal_double += param.internal_long;
@@ -188,14 +233,15 @@ var var::operator +(var param)
 
 					return retval;
 			}
+			break;
 	}
 
-	return (long)0;
+	return retval;
 }
 
 var var::operator -(var param)
 {
-	var retval = this->atofi();
+	var retval = this->num();
 
 	switch(retval.type)
 	{
@@ -204,7 +250,7 @@ var var::operator -(var param)
 			{
 				case VAR_STRING:
 
-					return retval - param.atofi();
+					return retval - param.num();
 
 				case VAR_INTEGER:
 					retval.internal_long -= param.internal_long;
@@ -218,13 +264,14 @@ var var::operator -(var param)
 
 					return retval;
 			}
+			break;
 
 		case VAR_FLOAT:
 			switch(param.type)
 			{
 				case VAR_STRING:
 
-					return retval - param.atofi();
+					return retval - param.num();
 
 				case VAR_INTEGER:
 					retval.internal_double -= param.internal_long;
@@ -238,6 +285,7 @@ var var::operator -(var param)
 
 					return retval;
 			}
+			break;
 	}
 
 	return retval;
@@ -245,16 +293,39 @@ var var::operator -(var param)
 
 var var::operator *(var param)
 {
-	var retval = this->atofi();
+	var retval = *this;
 
 	switch(retval.type)
 	{
+		case VAR_BOOLEAN:
+			switch(param.type)
+			{
+				case VAR_BOOLEAN:
+					retval.internal_bool = internal_bool && param.internal_bool;
+					retval.type = VAR_BOOLEAN;
+
+					return retval;
+
+				case VAR_INTEGER:
+					retval.internal_bool = internal_bool && param.internal_long;
+					retval.type = VAR_BOOLEAN;
+
+					return retval;
+
+				case VAR_FLOAT:
+					retval.internal_bool = internal_bool && param.internal_double;
+					retval.type = VAR_BOOLEAN;
+
+					return retval;
+			}
+			break;
+
 		case VAR_INTEGER:
 			switch(param.type)
 			{
 				case VAR_STRING:
 
-					return retval * param.atofi();
+					return retval * param.num();
 
 				case VAR_INTEGER:
 					retval.internal_long *= param.internal_long;
@@ -268,13 +339,14 @@ var var::operator *(var param)
 
 					return retval;
 			}
+			break;
 
 		case VAR_FLOAT:
 			switch(param.type)
 			{
 				case VAR_STRING:
 
-					return retval * param.atofi();
+					return retval * param.num();
 
 				case VAR_INTEGER:
 					retval.internal_double *= param.internal_long;
@@ -288,6 +360,7 @@ var var::operator *(var param)
 
 					return retval;
 			}
+			break;
 	}
 
 	return retval;
@@ -295,7 +368,7 @@ var var::operator *(var param)
 
 var var::operator /(var param)
 {
-	var retval = this->atofi();
+	var retval = this->num();
 
 	switch(retval.type)
 	{
@@ -304,7 +377,7 @@ var var::operator /(var param)
 			{
 				case VAR_STRING:
 
-					return retval / param.atofi();
+					return retval / param.num();
 
 				case VAR_INTEGER:
 					retval.internal_double = (double)retval.internal_long / param.internal_long;
@@ -319,13 +392,14 @@ var var::operator /(var param)
 
 					return retval;
 			}
+			break;
 
 		case VAR_FLOAT:
 			switch(param.type)
 			{
 				case VAR_STRING:
 
-					return retval / param.atofi();
+					return retval / param.num();
 
 				case VAR_INTEGER:
 					retval.internal_double /= param.internal_long;
@@ -339,6 +413,7 @@ var var::operator /(var param)
 
 					return retval;
 			}
+			break;
 	}
 
 	return retval;
@@ -348,26 +423,34 @@ bool var::operator ==(var param)
 {
 	switch(type)
 	{
-		case VAR_STRING:
+		case VAR_BOOLEAN:
 			switch(param.type)
 			{
 				case VAR_INTEGER:
-					return c_double() == param.internal_long;
+					return internal_bool == param.internal_long;
 
 				case VAR_FLOAT:
-					return c_double() == param.internal_double;
-
-				case VAR_STRING:
-					return internal_string == param.internal_string ;
+					return internal_bool == param.internal_double;
 
 				case VAR_NULL:
-					return c_double() == 0;
+					return internal_bool == 0;
 			}
-		break;
+			break;
+
+		case VAR_STRING:
+			switch(param.type)
+			{
+				case VAR_STRING:
+					return internal_string == param.internal_string ;
+			}
+			break;
 
 		case VAR_INTEGER:
 			switch(param.type)
 			{
+				case VAR_BOOLEAN:
+					return internal_long == param.internal_bool;
+
 				case VAR_INTEGER:
 					return internal_long == param.internal_long;
 
@@ -380,11 +463,14 @@ bool var::operator ==(var param)
 				case VAR_NULL:
 					return internal_long == 0;
 			}
-		break;
+			break;
 
 		case VAR_FLOAT:
 			switch(param.type)
 			{
+				case VAR_BOOLEAN:
+					return internal_double == param.internal_bool;
+
 				case VAR_INTEGER:
 					return internal_double == param.internal_long;
 
@@ -397,16 +483,19 @@ bool var::operator ==(var param)
 				case VAR_NULL:
 					return internal_double == 0;
 			}
-		break;
+			break;
 
 		case VAR_RESOURCE:
 			if(param.type == VAR_RESOURCE && internal_resource == param.internal_resource)
 				return true;
-		break;
+			break;
 
 		case VAR_NULL:
 			switch(param.type)
 			{
+				case VAR_BOOLEAN:
+					return 0 == param.internal_bool;
+
 				case VAR_INTEGER:
 					return 0 == param.internal_long;
 
@@ -414,12 +503,12 @@ bool var::operator ==(var param)
 					return 0 == param.internal_double;
 
 				case VAR_STRING:
-					return (0 == param.c_double());
+					return false;
 
 				case VAR_NULL:
 					return true;
 			}
-		break;
+			break;
 	}
 
 	return false;
@@ -429,34 +518,43 @@ bool var::operator <(var param)
 {
 	switch(type)
 	{
+		case VAR_BOOLEAN:
+			switch(param.type)
+			{
+				case VAR_BOOLEAN:
+					return internal_bool < param.internal_bool;
+
+				case VAR_INTEGER:
+					return internal_bool < param.internal_long;
+
+				case VAR_FLOAT:
+					return internal_bool < param.internal_double;
+
+				case VAR_NULL:
+					return internal_bool < 0;
+
+			}
+			break;
+
 		case VAR_STRING:
 			switch(param.type)
 			{
-				case VAR_INTEGER:
-					return c_double() < param.internal_long;
-
-				case VAR_FLOAT:
-					return c_double() < param.internal_double;
-
 				case VAR_STRING:
 					return internal_string < param.internal_string ;
-
-				case VAR_NULL:
-					return c_double() < 0;
 			}
 			break;
 
 		case VAR_INTEGER:
 			switch(param.type)
 			{
+				case VAR_BOOLEAN:
+					return internal_long < param.internal_bool;
+
 				case VAR_INTEGER:
 					return internal_long < param.internal_long;
 
 				case VAR_FLOAT:
 					return internal_long < param.internal_double;
-
-				case VAR_STRING:
-					return internal_long < param.c_double();
 
 				case VAR_NULL:
 					return internal_long < 0;
@@ -466,14 +564,14 @@ bool var::operator <(var param)
 		case VAR_FLOAT:
 			switch(param.type)
 			{
+				case VAR_BOOLEAN:
+					return internal_double < param.internal_bool;
+
 				case VAR_INTEGER:
 					return internal_double < param.internal_long;
 
 				case VAR_FLOAT:
 					return internal_double < param.internal_double;
-
-				case VAR_STRING:
-					return (internal_double < param.c_double());
 
 				case VAR_NULL:
 					return internal_double < 0;
@@ -481,27 +579,26 @@ bool var::operator <(var param)
 			break;
 
 		case VAR_NULL:
-		{
 			switch(param.type)
 			{
+				case VAR_BOOLEAN:
+					return 0 < param.internal_bool;
+
 				case VAR_INTEGER:
 					return 0 < param.internal_long;
 
 				case VAR_FLOAT:
 					return 0 < param.internal_double;
 
-				case VAR_STRING:
-					return 0 < param.c_long();
-
 				case VAR_NULL:
 					return false;
 			}
-		}
 			break;
 
 		case VAR_RESOURCE:
 				return false;
 	}
+
 	return false;
 }
 
@@ -509,26 +606,37 @@ bool var::operator >(var param)
 {
 	switch(type)
 	{
+		case VAR_BOOLEAN:
+			switch(param.type)
+			{
+				case VAR_BOOLEAN:
+					return internal_bool > param.internal_bool;
+
+				case VAR_INTEGER:
+					return internal_bool > param.internal_long;
+
+				case VAR_FLOAT:
+					return internal_bool > param.internal_double;
+
+				case VAR_NULL:
+					return internal_bool > 0;
+			}
+			break;
+
 		case VAR_STRING:
 			switch(param.type)
 			{
-				case VAR_INTEGER:
-					return c_double() > param.internal_long;
-
-				case VAR_FLOAT:
-					return c_double() > param.internal_double;
-
 				case VAR_STRING:
 					return internal_string > param.internal_string ;
-
-				case VAR_NULL:
-					return c_double() > 0;
 			}
 			break;
 
 		case VAR_INTEGER:
 			switch(param.type)
 			{
+				case VAR_BOOLEAN:
+					return internal_long > param.internal_bool;
+
 				case VAR_INTEGER:
 					return internal_long > param.internal_long;
 
@@ -546,6 +654,8 @@ bool var::operator >(var param)
 		case VAR_FLOAT:
 			switch(param.type)
 			{
+				case VAR_BOOLEAN:
+					return internal_double > param.internal_bool;
 				case VAR_INTEGER:
 					return internal_double > param.internal_long;
 
@@ -553,7 +663,7 @@ bool var::operator >(var param)
 					return internal_double > param.internal_double;
 
 				case VAR_STRING:
-					return (internal_double > param.c_double());
+					return internal_double > param.c_double();
 
 				case VAR_NULL:
 					return internal_double > 0;
@@ -561,85 +671,181 @@ bool var::operator >(var param)
 			break;
 
 		case VAR_NULL:
-		{
 			switch(param.type)
 			{
+				case VAR_BOOLEAN:
+					return 0 > param.internal_bool;
+
 				case VAR_INTEGER:
 					return 0 > param.internal_long;
 
 				case VAR_FLOAT:
 					return 0 > param.internal_double;
 
-				case VAR_STRING:
-					return 0 > param.c_long();
-
 				case VAR_NULL:
 					return false;
 			}
-		}
 			break;
 
 		case VAR_RESOURCE:
-				return false;
+			return false;
 	}
+
 	return false;
 }
 
 bool var::operator &&(var param)
 {
-	var retval = atofi();
-	param = param.atofi();
+	switch(type)
+	{
+		case VAR_BOOLEAN:
+			switch(param.type)
+			{
+				case VAR_BOOLEAN:
+					return internal_bool && param.internal_bool;
 
-	switch(retval.type)
+				case VAR_INTEGER:
+					return internal_bool && param.internal_long;
+
+				case VAR_FLOAT:
+					return internal_bool && param.internal_double;
+			}
+			break;
+
+		case VAR_INTEGER:
+			switch(param.type)
+			{
+				case VAR_BOOLEAN:
+					return internal_long && param.internal_bool;
+
+				case VAR_INTEGER:
+					return internal_long && param.internal_long;
+
+				case VAR_FLOAT:
+					return internal_long && param.internal_double;
+			}
+			break;
+
+		case VAR_FLOAT:
+			switch(param.type)
+			{
+				case VAR_BOOLEAN:
+					return internal_double && param.internal_long;
+
+				case VAR_INTEGER:
+					return internal_double && param.internal_long;
+
+				case VAR_FLOAT:
+					return internal_double && param.internal_double;
+			}
+			break;
+	}
+
+	return false;
+}
+
+bool var::operator ||(var param)
+{
+	switch(type)
+	{
+		case VAR_BOOLEAN:
+			switch(param.type)
+			{
+				case VAR_BOOLEAN:
+					return internal_bool || param.internal_bool;
+
+				case VAR_INTEGER:
+					return internal_bool || param.internal_long;
+
+				case VAR_FLOAT:
+					return internal_bool || param.internal_double;
+			}
+			break;
+
+		case VAR_INTEGER:
+			switch(param.type)
+			{
+				case VAR_BOOLEAN:
+					return internal_long || param.internal_bool;
+
+				case VAR_INTEGER:
+					return internal_long || param.internal_long;
+
+				case VAR_FLOAT:
+					return internal_long || param.internal_double;
+			}
+			break;
+
+		case VAR_FLOAT:
+			switch(param.type)
+			{
+				case VAR_BOOLEAN:
+					return internal_double || param.internal_long;
+
+				case VAR_INTEGER:
+					return internal_double || param.internal_long;
+
+				case VAR_FLOAT:
+					return internal_double || param.internal_double;
+			}
+			break;
+	}
+
+	return false;
+}
+
+long var::operator &(var param)
+{
+	switch(type)
 	{
 		case VAR_INTEGER:
 			switch(param.type)
 			{
 				case VAR_INTEGER:
-					return retval.internal_long && param.internal_long;
+					return internal_long & param.internal_long;
 
 				case VAR_FLOAT:
-					return retval.internal_long && param.internal_double;
+					return internal_long & (long)param.internal_double;
 			}
+			break;
 
 		case VAR_FLOAT:
 			switch(param.type)
 			{
 				case VAR_INTEGER:
-					return retval.internal_double && param.internal_long;
+					return (long)internal_double & param.internal_long;
 
 				case VAR_FLOAT:
-					return retval.internal_double && param.internal_double;
+					return (long)internal_double & (long)param.internal_double;
 			}
+			break;
 	}
+
 	return false;
 }
 
 long var::operator |(var param)
 {
-	var retval = atofi();
-	param = param.atofi();
-
-	switch(retval.type)
+	switch(type)
 	{
 		case VAR_INTEGER:
 			switch(param.type)
 			{
 				case VAR_INTEGER:
-					return retval.internal_long | param.internal_long;
+					return internal_long | param.internal_long;
 
 				case VAR_FLOAT:
-					return retval.internal_long | (long)param.internal_double;
+					return internal_long | (long)param.internal_double;
 			}
 
 		case VAR_FLOAT:
 			switch(param.type)
 			{
 				case VAR_INTEGER:
-					return (long)retval.internal_double | param.internal_long;
+					return (long)internal_double | param.internal_long;
 
 				case VAR_FLOAT:
-					return (long)retval.internal_double | (long)param.internal_double;
+					return (long)internal_double | (long)param.internal_double;
 			}
 	}
 
@@ -658,8 +864,7 @@ var& var::operator[](var param)
 		if(iterador->first == param)
 			return (var&)(iterador->second);
 
-
-	internal_map.push_back(pair<var, var>(param,var()));
+	internal_map.push_back(pair<var,var>(param,var()));
 
 	return (var&)(operator[](param));
 }
@@ -673,11 +878,11 @@ var& var::operator <<(var param)
 
 	int last = internal_map.back().first.c_long() + 1;
 
-	internal_map.push_back(pair< var,var>(last, param));
+	internal_map.push_back(pair<var,var>(last, param));
 	return (var&)(operator[](last));
 }
 
-var var::atofi()
+var var::num()
 {
 	var retval;
 	switch(type)
@@ -685,7 +890,7 @@ var var::atofi()
 		case VAR_STRING:
 			retval.internal_double = atof(internal_string.c_str());
 			retval.internal_long = (long)retval.internal_double;
-			retval.type = retval.internal_double == retval.internal_long ? VAR_INTEGER : VAR_FLOAT;
+			retval.type = (retval.internal_double == retval.internal_long) ? VAR_INTEGER : VAR_FLOAT;
 			break;
 
 		case VAR_INTEGER:
@@ -711,6 +916,9 @@ long var::c_long()
 {
 	switch(type)
 	{
+		case VAR_BOOLEAN:
+			return internal_bool ? 1 : 0;
+
 		case VAR_STRING:
 			return (long)atof(internal_string.c_str());
 
@@ -729,6 +937,9 @@ double var::c_double()
 {
 	switch(type)
 	{
+		case VAR_BOOLEAN:
+			return internal_bool ? 1 : 0;
+
 		case VAR_STRING:
 			return atof(internal_string.c_str());
 
@@ -749,6 +960,9 @@ string var::cpp_string()
 
 	switch(type)
 	{
+		case VAR_BOOLEAN:
+			return internal_bool ? "true" : "false";
+
 		case VAR_STRING:
 			return  internal_string;
 
