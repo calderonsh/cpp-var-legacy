@@ -442,6 +442,20 @@ bool var::operator ==(var param)
 			{
 				case VAR_STRING:
 					return internal_string == param.internal_string ;
+
+				case VAR_INTEGER:
+					for(unsigned i = 0; i < internal_string.length(); i++)
+						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
+							return 0 == param.internal_long;
+
+					return c_double() == param.internal_long;
+
+				case VAR_FLOAT:
+					for(unsigned i = 0; i < internal_string.length(); i++)
+						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
+							return 0 == param.internal_double;
+
+					return c_double() == param.internal_double;
 			}
 			break;
 
@@ -458,6 +472,10 @@ bool var::operator ==(var param)
 					return internal_long == param.internal_double;
 
 				case VAR_STRING:
+					for(unsigned i = 0; i < param.internal_string.length(); i++)
+						if( (param.internal_string[i] < '0' || param.internal_string[i] > '9') && param.internal_string[i] != '.')
+							return internal_long == 0;
+
 					return internal_long == param.c_double();
 
 				case VAR_NULL:
@@ -478,6 +496,10 @@ bool var::operator ==(var param)
 					return internal_double == param.internal_double;
 
 				case VAR_STRING:
+					for(unsigned i = 0; i < param.internal_string.length(); i++)
+						if( (param.internal_string[i] < '0' || param.internal_string[i] > '9') && param.internal_string[i] != '.')
+							return internal_double == 0;
+
 					return internal_double == param.c_double();
 
 				case VAR_NULL:
@@ -541,6 +563,20 @@ bool var::operator <(var param)
 			{
 				case VAR_STRING:
 					return internal_string < param.internal_string ;
+
+				case VAR_INTEGER:
+					for(unsigned i = 0; i < internal_string.length(); i++)
+						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
+							return 0 < param.internal_long;
+
+					return c_double() < param.internal_long;
+
+				case VAR_FLOAT:
+					for(unsigned i = 0; i < internal_string.length(); i++)
+						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
+							return 0 < param.internal_double;
+
+					return c_double() < param.internal_double;
 			}
 			break;
 
@@ -555,6 +591,13 @@ bool var::operator <(var param)
 
 				case VAR_FLOAT:
 					return internal_long < param.internal_double;
+
+				case VAR_STRING:
+					for(unsigned i = 0; i < param.internal_string.length(); i++)
+						if( (param.internal_string[i] < '0' || param.internal_string[i] > '9') && param.internal_string[i] != '.')
+							return internal_long < 0;
+
+					return internal_long < param.c_double();
 
 				case VAR_NULL:
 					return internal_long < 0;
@@ -572,6 +615,13 @@ bool var::operator <(var param)
 
 				case VAR_FLOAT:
 					return internal_double < param.internal_double;
+
+				case VAR_STRING:
+					for(unsigned i = 0; i < param.internal_string.length(); i++)
+						if( (param.internal_string[i] < '0' || param.internal_string[i] > '9') && param.internal_string[i] != '.')
+							return internal_double < 0;
+
+					return internal_double < param.c_double();
 
 				case VAR_NULL:
 					return internal_double < 0;
@@ -628,6 +678,20 @@ bool var::operator >(var param)
 			{
 				case VAR_STRING:
 					return internal_string > param.internal_string ;
+
+				case VAR_INTEGER:
+					for(unsigned i = 0; i < internal_string.length(); i++)
+						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
+							return 0 > param.internal_long;
+
+					return c_double() > param.internal_long;
+
+				case VAR_FLOAT:
+					for(unsigned i = 0; i < internal_string.length(); i++)
+						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
+							return 0 > internal_double;
+
+					return c_double() > param.internal_double;
 			}
 			break;
 
@@ -876,9 +940,12 @@ var& var::operator <<(var param)
 		type = VAR_MAP;
 	}
 
-	int last = internal_map.back().first.c_long() + 1;
+	int last = 0;
+	internal_map_type::iterator it;
+	for(it = internal_map.begin(); it != internal_map.end(); it++)
+		last = ( (it->first) > last || (it->first) == last && ( !((it->first) == 0) || (it->first).type == VAR_INTEGER || (it->first).type == VAR_FLOAT)) ? (it->first).c_long() + 1 : last;
 
-	internal_map.push_back(pair<var,var>(last, param));
+	internal_map.push_back(pair<var,var>(var(last), param));
 	return (var&)(operator[](last));
 }
 
