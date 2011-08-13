@@ -426,6 +426,9 @@ bool var::operator ==(var param)
 		case VAR_BOOLEAN:
 			switch(param.type)
 			{
+				case VAR_BOOLEAN:
+					return internal_bool == param.internal_bool;
+
 				case VAR_INTEGER:
 					return internal_bool == param.internal_long;
 
@@ -943,7 +946,7 @@ var& var::operator <<(var param)
 	int last = 0;
 	internal_map_type::iterator it;
 	for(it = internal_map.begin(); it != internal_map.end(); it++)
-		last = ( (it->first) > last || (it->first) == last && ( !((it->first) == 0) || (it->first).type == VAR_INTEGER || (it->first).type == VAR_FLOAT)) ? (it->first).c_long() + 1 : last;
+		last = ( (it->first) > last || ((it->first) == last && ( !((it->first) == 0) || (it->first).type == VAR_INTEGER || (it->first).type == VAR_FLOAT))) ? (it->first).c_long() + 1 : last;
 
 	internal_map.push_back(pair<var,var>(var(last), param));
 	return (var&)(operator[](last));

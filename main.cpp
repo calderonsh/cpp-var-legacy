@@ -9,30 +9,19 @@ int main(int argc, char** argv)
 {
 	var myVar;
 
-	myVar = (var) "20.0" == 20.0;
-	cout << myVar.cpp_string() << endl;
+	myVar = true;
 
-	myVar = (var) "20.0a" == 20.0;
-	cout << myVar.cpp_string() << endl;
+	if(myVar == true)
+		cout << "True" << endl;
+	else
+		cout << "False" << endl;
 
-	myVar = (var) "20" == 20;
-	cout << myVar.cpp_string() << endl;
+	myVar = false;
 
-	myVar = (var) "20a" == 20;
-	cout << myVar.cpp_string() << endl;
-
-
-	myVar = (var) 20.0 == "20.0";
-	cout << myVar.cpp_string() << endl;
-
-	myVar = (var) 20.0 == "20.0a";
-	cout << myVar.cpp_string() << endl;
-
-	myVar = (var) 20 == "20";
-	cout << myVar.cpp_string() << endl;
-
-	myVar = (var) 20 == "20a";
-	cout << myVar.cpp_string() << endl;
+	if(myVar == true)
+		cout << "True" << endl;
+	else
+		cout << "False" << endl;
 
 	return 0;
 }
