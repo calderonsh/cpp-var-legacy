@@ -1,12 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <sstream>
-#include <list>
 using namespace std;
 
 #include "var.hpp"
-
 
 var::var()
 {

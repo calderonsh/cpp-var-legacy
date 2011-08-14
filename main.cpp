@@ -1,9 +1,6 @@
 #include <iostream>
-#include <sstream>
-#include <list>
-using namespace std;
-
 #include "var.hpp"
+using namespace std;
 
 int main(int argc, char** argv)
 {

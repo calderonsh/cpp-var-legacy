@@ -1,6 +1,9 @@
 #ifndef CPP_VAR
 #define CPP_VAR
 
+#include <string>
+#include <list>
+
 enum {
 	VAR_NULL,
 	VAR_BOOLEAN,
@@ -13,16 +16,16 @@ enum {
 
 class var {
 	public:
-		typedef list < pair<var, var> > internal_map_type;
+		typedef std::list < std::pair<var, var> > internal_map_type;
 
 	private:
 		unsigned type;
 
-		bool	internal_bool;
-		long	internal_long;
-		double	internal_double;
-		string	internal_string;
-		void*	internal_resource;
+		bool		internal_bool;
+		long		internal_long;
+		double		internal_double;
+		std::string	internal_string;
+		void*		internal_resource;
 
 		internal_map_type internal_map;
 
@@ -37,7 +40,7 @@ class var {
 		var(double);
 
 		var(const char*);
-		var(string);
+		var(std::string);
 		var(void*);
 
 		void reset();
@@ -64,7 +67,7 @@ class var {
 
 		long c_long();
 		double c_double();
-		string cpp_string();
+		std::string cpp_string();
 		internal_map_type& cpp_map();
 };
 
