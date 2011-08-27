@@ -29,46 +29,47 @@ class var {
 
 		internal_map_type internal_map;
 
-		var num();
+		var num() const;
 
 	public:
 		var();
 
-		var(bool);
-		var(int);
-		var(long);
-		var(double);
+		var(const bool&);
+		var(const int&);
+		var(const long&);
+		var(const double&d);
 
 		var(const char*);
-		var(std::string);
+		var(const std::string&);
 		var(void*);
 
 		void reset();
 
-		var operator =(var);
+		var operator =(const var&);
 
-		var operator +(var);
-		var operator -(var);
-		var operator *(var);
-		var operator /(var);
+		var operator +(const var&);
+		var operator -(const var&);
+		var operator *(const var&);
+		var operator /(const var&);
 
-		bool operator ==(var);
+		bool operator ==(const var&);
 
-		bool operator <(var);
-		bool operator >(var);
-		bool operator &&(var);
-		bool operator ||(var);
+		bool operator <(const var&);
+		bool operator >(const var&);
+		bool operator &&(const var&);
+		bool operator ||(const var&);
 
-		long operator &(var);
-		long operator |(var);
+		long operator &(const var&);
+		long operator |(const var&);
 
-		var& operator [](var);
-		var& operator <<(var);
+		var& operator [](const var&);
+		var& operator <<(const var&);
 
-		long c_long();
-		double c_double();
-		std::string cpp_string();
+		long c_long() const;
+		double c_double() const;
+		std::string cpp_string() const;
 		internal_map_type& cpp_map();
+
 };
 
 #endif

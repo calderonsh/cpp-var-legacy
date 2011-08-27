@@ -10,25 +10,25 @@ var::var()
 	type = VAR_NULL;
 }
 
-var::var(bool param)
+var::var(const bool& param)
 {
 	internal_bool = param;
 	type = VAR_BOOLEAN;
 }
 
-var::var(int param)
+var::var(const int& param)
 {
 	internal_long = param;
 	type = VAR_INTEGER;
 }
 
-var::var(long param)
+var::var(const long& param)
 {
 	internal_long = param;
 	type = VAR_INTEGER;
 }
 
-var::var(double param)
+var::var(const double& param)
 {
 	internal_double = param;
 	type = VAR_FLOAT;
@@ -40,7 +40,7 @@ var::var(const char* param)
 	type = VAR_STRING;
 }
 
-var::var(string param)
+var::var(const string& param)
 {
 	internal_string = param;
 	type = VAR_STRING;
@@ -89,7 +89,7 @@ void var::reset()
 	type = VAR_NULL;
 }
 
-var var::operator =(var param)
+var var::operator =(const var& param)
 {
 	this->reset();
 
@@ -138,7 +138,7 @@ var var::operator =(var param)
 	return param;
 }
 
-var var::operator +(var param)
+var var::operator +(const var& param)
 {
 	var retval = *this;
 
@@ -236,7 +236,7 @@ var var::operator +(var param)
 	return retval;
 }
 
-var var::operator -(var param)
+var var::operator -(const var& param)
 {
 	var retval = this->num();
 
@@ -288,7 +288,7 @@ var var::operator -(var param)
 	return retval;
 }
 
-var var::operator *(var param)
+var var::operator *(const var& param)
 {
 	var retval = *this;
 
@@ -363,7 +363,7 @@ var var::operator *(var param)
 	return retval;
 }
 
-var var::operator /(var param)
+var var::operator /(const var& param)
 {
 	var retval = this->num();
 
@@ -416,7 +416,7 @@ var var::operator /(var param)
 	return retval;
 }
 
-bool var::operator ==(var param)
+bool var::operator ==(const var& param)
 {
 	switch(type)
 	{
@@ -536,7 +536,7 @@ bool var::operator ==(var param)
 	return false;
 }
 
-bool var::operator <(var param)
+bool var::operator <(const var& param)
 {
 	switch(type)
 	{
@@ -652,7 +652,7 @@ bool var::operator <(var param)
 	return false;
 }
 
-bool var::operator >(var param)
+bool var::operator >(const var& param)
 {
 	switch(type)
 	{
@@ -758,7 +758,7 @@ bool var::operator >(var param)
 	return false;
 }
 
-bool var::operator &&(var param)
+bool var::operator &&(const var& param)
 {
 	switch(type)
 	{
@@ -808,7 +808,7 @@ bool var::operator &&(var param)
 	return false;
 }
 
-bool var::operator ||(var param)
+bool var::operator ||(const var& param)
 {
 	switch(type)
 	{
@@ -858,7 +858,7 @@ bool var::operator ||(var param)
 	return false;
 }
 
-long var::operator &(var param)
+long var::operator &(const var& param)
 {
 	switch(type)
 	{
@@ -888,7 +888,7 @@ long var::operator &(var param)
 	return false;
 }
 
-long var::operator |(var param)
+long var::operator |(const var& param)
 {
 	switch(type)
 	{
@@ -916,7 +916,7 @@ long var::operator |(var param)
 	return false;
 }
 
-var& var::operator[](var param)
+var& var::operator[](const var& param)
 {
 	if(type != VAR_MAP) {
 		reset();
@@ -933,7 +933,7 @@ var& var::operator[](var param)
 	return (var&)(operator[](param));
 }
 
-var& var::operator <<(var param)
+var& var::operator <<(const var& param)
 {
 	if(type != VAR_MAP){
 		reset();
@@ -949,7 +949,7 @@ var& var::operator <<(var param)
 	return (var&)(operator[](last));
 }
 
-var var::num()
+var var::num() const
 {
 	var retval;
 	switch(type)
@@ -979,7 +979,7 @@ var var::num()
 	return retval;
 }
 
-long var::c_long()
+long var::c_long() const
 {
 	switch(type)
 	{
@@ -1000,7 +1000,7 @@ long var::c_long()
 	return 0;
 }
 
-double var::c_double()
+double var::c_double() const
 {
 	switch(type)
 	{
@@ -1020,7 +1020,7 @@ double var::c_double()
 	return 0;
 }
 
-string var::cpp_string()
+string var::cpp_string() const
 {
 	string retval;
 	char* buffer = (char*) malloc(32);
@@ -1051,7 +1051,7 @@ string var::cpp_string()
 	return retval;
 }
 
- var::internal_map_type& var::cpp_map()
+var::internal_map_type& var::cpp_map()
 {
 	return (internal_map_type&) internal_map;
 }
