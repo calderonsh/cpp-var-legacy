@@ -19,7 +19,7 @@ class var {
 		typedef std::list < std::pair<var, var> > internal_map_type;
 
 	private:
-		unsigned type;
+		unsigned	internal_type;
 
 		bool		internal_bool;
 		long		internal_long;
@@ -37,7 +37,7 @@ class var {
 		var(const bool&);
 		var(const int&);
 		var(const long&);
-		var(const double&d);
+		var(const double&);
 
 		var(const char*);
 		var(const std::string&);
@@ -65,11 +65,15 @@ class var {
 		var& operator [](const var&);
 		var& operator <<(const var&);
 
+		friend int var_type(const var&);
+
 		long c_long() const;
 		double c_double() const;
 		std::string cpp_string() const;
 		internal_map_type& cpp_map();
 
 };
+
+int var_type(const var&);
 
 #endif

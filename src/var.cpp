@@ -7,54 +7,54 @@ using namespace std;
 
 var::var()
 {
-	type = VAR_NULL;
+	internal_type = VAR_NULL;
 }
 
 var::var(const bool& param)
 {
 	internal_bool = param;
-	type = VAR_BOOLEAN;
+	internal_type = VAR_BOOLEAN;
 }
 
 var::var(const int& param)
 {
 	internal_long = param;
-	type = VAR_INTEGER;
+	internal_type = VAR_INTEGER;
 }
 
 var::var(const long& param)
 {
 	internal_long = param;
-	type = VAR_INTEGER;
+	internal_type = VAR_INTEGER;
 }
 
 var::var(const double& param)
 {
 	internal_double = param;
-	type = VAR_FLOAT;
+	internal_type = VAR_FLOAT;
 }
 
 var::var(const char* param)
 {
 	internal_string = param;
-	type = VAR_STRING;
+	internal_type = VAR_STRING;
 }
 
 var::var(const string& param)
 {
 	internal_string = param;
-	type = VAR_STRING;
+	internal_type = VAR_STRING;
 }
 
 var::var(void* param)
 {
 	internal_resource = param;
-	type = VAR_RESOURCE;
+	internal_type = VAR_RESOURCE;
 }
 
 void var::reset()
 {
-	switch(type)
+	switch(internal_type)
 	{
 		case VAR_BOOLEAN:
 			internal_bool = false;
@@ -86,52 +86,52 @@ void var::reset()
 			break;
 	}
 
-	type = VAR_NULL;
+	internal_type = VAR_NULL;
 }
 
 var var::operator =(const var& param)
 {
 	this->reset();
 
-	switch(param.type)
+	switch(param.internal_type)
 	{
 		case VAR_BOOLEAN:
 			internal_bool = param.internal_bool;
-			type = VAR_BOOLEAN;
+			internal_type = VAR_BOOLEAN;
 
 			break;
 
 		case VAR_STRING:
 			internal_string = param.internal_string;
-			type = VAR_STRING;
+			internal_type = VAR_STRING;
 
 			break;
 
 		case VAR_INTEGER:
 			internal_long = param.internal_long;
-			type = VAR_INTEGER;
+			internal_type = VAR_INTEGER;
 
 			break;
 
 		case VAR_FLOAT:
 			internal_double = param.internal_double;
-			type = VAR_FLOAT;
+			internal_type = VAR_FLOAT;
 
 			break;
 
 		case VAR_MAP:
 			internal_map = param.internal_map;
-			type = VAR_MAP;
+			internal_type = VAR_MAP;
 
 			break;
 
 		case VAR_RESOURCE:
 			internal_resource = param.internal_resource;
-			type = VAR_RESOURCE;
+			internal_type = VAR_RESOURCE;
 			break;
 
 		case VAR_NULL:
-			type=VAR_NULL;
+			internal_type=VAR_NULL;
 
 	}
 
@@ -142,56 +142,56 @@ var var::operator +(const var& param)
 {
 	var retval = *this;
 
-	switch(retval.type)
+	switch(retval.internal_type)
 	{
 		case VAR_BOOLEAN:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					retval.internal_bool = internal_bool || param.internal_bool;
-					retval.type = VAR_BOOLEAN;
+					retval.internal_type = VAR_BOOLEAN;
 
 					return retval;
 
 				case VAR_INTEGER:
 					retval.internal_bool = internal_bool || param.internal_long;
-					retval.type = VAR_BOOLEAN;
+					retval.internal_type = VAR_BOOLEAN;
 
 					return retval;
 
 				case VAR_FLOAT:
 					retval.internal_bool = internal_bool || param.internal_double;
-					retval.type = VAR_BOOLEAN;
+					retval.internal_type = VAR_BOOLEAN;
 
 					return retval;
 			}
 			break;
 
 		case VAR_STRING:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_STRING:
 					retval.internal_string += param.internal_string;
-					retval.type = VAR_STRING;
+					retval.internal_type = VAR_STRING;
 
 					return retval;
 
 				case VAR_INTEGER:
 					retval.internal_string += param.cpp_string();
-					retval.type = VAR_STRING;
+					retval.internal_type = VAR_STRING;
 
 					return retval;
 
 				case VAR_FLOAT:
 					retval.internal_string += param.cpp_string();
-					retval.type = VAR_STRING;
+					retval.internal_type = VAR_STRING;
 
 					return retval;
 			}
 			break;
 
 		case VAR_INTEGER:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_STRING:
 
@@ -199,20 +199,20 @@ var var::operator +(const var& param)
 
 				case VAR_INTEGER:
 					retval.internal_long += param.internal_long;
-					retval.type = VAR_INTEGER;
+					retval.internal_type = VAR_INTEGER;
 
 					return retval;
 
 				case VAR_FLOAT:
 					retval.internal_double = retval.internal_long + param.internal_double;
-					retval.type = VAR_FLOAT;
+					retval.internal_type = VAR_FLOAT;
 
 					return retval;
 			}
 			break;
 
 		case VAR_FLOAT:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_STRING:
 
@@ -220,13 +220,13 @@ var var::operator +(const var& param)
 
 				case VAR_INTEGER:
 					retval.internal_double += param.internal_long;
-					retval.type = VAR_FLOAT;
+					retval.internal_type = VAR_FLOAT;
 
 					return retval;
 
 				case VAR_FLOAT:
 					retval.internal_double += param.internal_double;
-					retval.type = VAR_FLOAT;
+					retval.internal_type = VAR_FLOAT;
 
 					return retval;
 			}
@@ -240,10 +240,10 @@ var var::operator -(const var& param)
 {
 	var retval = this->num();
 
-	switch(retval.type)
+	switch(retval.internal_type)
 	{
 		case VAR_INTEGER:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_STRING:
 
@@ -251,20 +251,20 @@ var var::operator -(const var& param)
 
 				case VAR_INTEGER:
 					retval.internal_long -= param.internal_long;
-					retval.type = VAR_INTEGER;
+					retval.internal_type = VAR_INTEGER;
 
 					return retval;
 
 				case VAR_FLOAT:
 					retval.internal_double = retval.internal_long - param.internal_double;
-					retval.type = VAR_FLOAT;
+					retval.internal_type = VAR_FLOAT;
 
 					return retval;
 			}
 			break;
 
 		case VAR_FLOAT:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_STRING:
 
@@ -272,13 +272,13 @@ var var::operator -(const var& param)
 
 				case VAR_INTEGER:
 					retval.internal_double -= param.internal_long;
-					retval.type = VAR_FLOAT;
+					retval.internal_type = VAR_FLOAT;
 
 					return retval;
 
 				case VAR_FLOAT:
 					retval.internal_double -= param.internal_double;
-					retval.type = VAR_FLOAT;
+					retval.internal_type = VAR_FLOAT;
 
 					return retval;
 			}
@@ -292,33 +292,33 @@ var var::operator *(const var& param)
 {
 	var retval = *this;
 
-	switch(retval.type)
+	switch(retval.internal_type)
 	{
 		case VAR_BOOLEAN:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					retval.internal_bool = internal_bool && param.internal_bool;
-					retval.type = VAR_BOOLEAN;
+					retval.internal_type = VAR_BOOLEAN;
 
 					return retval;
 
 				case VAR_INTEGER:
 					retval.internal_bool = internal_bool && param.internal_long;
-					retval.type = VAR_BOOLEAN;
+					retval.internal_type = VAR_BOOLEAN;
 
 					return retval;
 
 				case VAR_FLOAT:
 					retval.internal_bool = internal_bool && param.internal_double;
-					retval.type = VAR_BOOLEAN;
+					retval.internal_type = VAR_BOOLEAN;
 
 					return retval;
 			}
 			break;
 
 		case VAR_INTEGER:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_STRING:
 
@@ -326,20 +326,20 @@ var var::operator *(const var& param)
 
 				case VAR_INTEGER:
 					retval.internal_long *= param.internal_long;
-					retval.type = VAR_INTEGER;
+					retval.internal_type = VAR_INTEGER;
 
 					return retval;
 
 				case VAR_FLOAT:
 					retval.internal_double = retval.internal_long * param.internal_double;
-					retval.type = VAR_FLOAT;
+					retval.internal_type = VAR_FLOAT;
 
 					return retval;
 			}
 			break;
 
 		case VAR_FLOAT:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_STRING:
 
@@ -347,13 +347,13 @@ var var::operator *(const var& param)
 
 				case VAR_INTEGER:
 					retval.internal_double *= param.internal_long;
-					retval.type = VAR_FLOAT;
+					retval.internal_type = VAR_FLOAT;
 
 					return retval;
 
 				case VAR_FLOAT:
 					retval.internal_double *= param.internal_double;
-					retval.type = VAR_FLOAT;
+					retval.internal_type = VAR_FLOAT;
 
 					return retval;
 			}
@@ -367,10 +367,10 @@ var var::operator /(const var& param)
 {
 	var retval = this->num();
 
-	switch(retval.type)
+	switch(retval.internal_type)
 	{
 		case VAR_INTEGER:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_STRING:
 
@@ -379,20 +379,20 @@ var var::operator /(const var& param)
 				case VAR_INTEGER:
 					retval.internal_double = (double)retval.internal_long / param.internal_long;
 					retval.internal_long = (long)retval.internal_double;
-					retval.type = retval.internal_double == retval.internal_long ? VAR_INTEGER : VAR_FLOAT;
+					retval.internal_type = retval.internal_double == retval.internal_long ? VAR_INTEGER : VAR_FLOAT;
 
 					return retval;
 
 				case VAR_FLOAT:
 					retval.internal_double = retval.internal_long / param.internal_double;
-					retval.type = VAR_FLOAT;
+					retval.internal_type = VAR_FLOAT;
 
 					return retval;
 			}
 			break;
 
 		case VAR_FLOAT:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_STRING:
 
@@ -400,13 +400,13 @@ var var::operator /(const var& param)
 
 				case VAR_INTEGER:
 					retval.internal_double /= param.internal_long;
-					retval.type = VAR_FLOAT;
+					retval.internal_type = VAR_FLOAT;
 
 					return retval;
 
 				case VAR_FLOAT:
 					retval.internal_double /= param.internal_double;
-					retval.type = VAR_FLOAT;
+					retval.internal_type = VAR_FLOAT;
 
 					return retval;
 			}
@@ -418,10 +418,10 @@ var var::operator /(const var& param)
 
 bool var::operator ==(const var& param)
 {
-	switch(type)
+	switch(internal_type)
 	{
 		case VAR_BOOLEAN:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_bool == param.internal_bool;
@@ -438,7 +438,7 @@ bool var::operator ==(const var& param)
 			break;
 
 		case VAR_STRING:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_STRING:
 					return internal_string == param.internal_string ;
@@ -460,7 +460,7 @@ bool var::operator ==(const var& param)
 			break;
 
 		case VAR_INTEGER:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_long == param.internal_bool;
@@ -484,7 +484,7 @@ bool var::operator ==(const var& param)
 			break;
 
 		case VAR_FLOAT:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_double == param.internal_bool;
@@ -508,12 +508,12 @@ bool var::operator ==(const var& param)
 			break;
 
 		case VAR_RESOURCE:
-			if(param.type == VAR_RESOURCE && internal_resource == param.internal_resource)
+			if(param.internal_type == VAR_RESOURCE && internal_resource == param.internal_resource)
 				return true;
 			break;
 
 		case VAR_NULL:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return 0 == param.internal_bool;
@@ -538,10 +538,10 @@ bool var::operator ==(const var& param)
 
 bool var::operator <(const var& param)
 {
-	switch(type)
+	switch(internal_type)
 	{
 		case VAR_BOOLEAN:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_bool < param.internal_bool;
@@ -559,7 +559,7 @@ bool var::operator <(const var& param)
 			break;
 
 		case VAR_STRING:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_STRING:
 					return internal_string < param.internal_string ;
@@ -581,7 +581,7 @@ bool var::operator <(const var& param)
 			break;
 
 		case VAR_INTEGER:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_long < param.internal_bool;
@@ -605,7 +605,7 @@ bool var::operator <(const var& param)
 			break;
 
 		case VAR_FLOAT:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_double < param.internal_bool;
@@ -629,7 +629,7 @@ bool var::operator <(const var& param)
 			break;
 
 		case VAR_NULL:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return 0 < param.internal_bool;
@@ -654,10 +654,10 @@ bool var::operator <(const var& param)
 
 bool var::operator >(const var& param)
 {
-	switch(type)
+	switch(internal_type)
 	{
 		case VAR_BOOLEAN:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_bool > param.internal_bool;
@@ -674,7 +674,7 @@ bool var::operator >(const var& param)
 			break;
 
 		case VAR_STRING:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_STRING:
 					return internal_string > param.internal_string ;
@@ -696,7 +696,7 @@ bool var::operator >(const var& param)
 			break;
 
 		case VAR_INTEGER:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_long > param.internal_bool;
@@ -716,10 +716,11 @@ bool var::operator >(const var& param)
 			break;
 
 		case VAR_FLOAT:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_double > param.internal_bool;
+
 				case VAR_INTEGER:
 					return internal_double > param.internal_long;
 
@@ -735,7 +736,7 @@ bool var::operator >(const var& param)
 			break;
 
 		case VAR_NULL:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return 0 > param.internal_bool;
@@ -760,10 +761,10 @@ bool var::operator >(const var& param)
 
 bool var::operator &&(const var& param)
 {
-	switch(type)
+	switch(internal_type)
 	{
 		case VAR_BOOLEAN:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_bool && param.internal_bool;
@@ -777,7 +778,7 @@ bool var::operator &&(const var& param)
 			break;
 
 		case VAR_INTEGER:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_long && param.internal_bool;
@@ -791,7 +792,7 @@ bool var::operator &&(const var& param)
 			break;
 
 		case VAR_FLOAT:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_double && param.internal_long;
@@ -810,10 +811,10 @@ bool var::operator &&(const var& param)
 
 bool var::operator ||(const var& param)
 {
-	switch(type)
+	switch(internal_type)
 	{
 		case VAR_BOOLEAN:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_bool || param.internal_bool;
@@ -827,7 +828,7 @@ bool var::operator ||(const var& param)
 			break;
 
 		case VAR_INTEGER:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_long || param.internal_bool;
@@ -841,7 +842,7 @@ bool var::operator ||(const var& param)
 			break;
 
 		case VAR_FLOAT:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
 					return internal_double || param.internal_long;
@@ -860,10 +861,10 @@ bool var::operator ||(const var& param)
 
 long var::operator &(const var& param)
 {
-	switch(type)
+	switch(internal_type)
 	{
 		case VAR_INTEGER:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_INTEGER:
 					return internal_long & param.internal_long;
@@ -874,7 +875,7 @@ long var::operator &(const var& param)
 			break;
 
 		case VAR_FLOAT:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_INTEGER:
 					return (long)internal_double & param.internal_long;
@@ -890,10 +891,10 @@ long var::operator &(const var& param)
 
 long var::operator |(const var& param)
 {
-	switch(type)
+	switch(internal_type)
 	{
 		case VAR_INTEGER:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_INTEGER:
 					return internal_long | param.internal_long;
@@ -903,7 +904,7 @@ long var::operator |(const var& param)
 			}
 
 		case VAR_FLOAT:
-			switch(param.type)
+			switch(param.internal_type)
 			{
 				case VAR_INTEGER:
 					return (long)internal_double | param.internal_long;
@@ -918,9 +919,9 @@ long var::operator |(const var& param)
 
 var& var::operator[](const var& param)
 {
-	if(type != VAR_MAP) {
+	if(internal_type != VAR_MAP) {
 		reset();
-		type = VAR_MAP;
+		internal_type = VAR_MAP;
 	}
 
 	internal_map_type::iterator iterador;
@@ -935,15 +936,15 @@ var& var::operator[](const var& param)
 
 var& var::operator <<(const var& param)
 {
-	if(type != VAR_MAP){
+	if(internal_type != VAR_MAP){
 		reset();
-		type = VAR_MAP;
+		internal_type = VAR_MAP;
 	}
 
 	int last = 0;
 	internal_map_type::iterator it;
 	for(it = internal_map.begin(); it != internal_map.end(); it++)
-		last = ( (it->first) > last || ((it->first) == last && ( !((it->first) == 0) || (it->first).type == VAR_INTEGER || (it->first).type == VAR_FLOAT))) ? (it->first).c_long() + 1 : last;
+		last = ( (it->first) > last || ((it->first) == last && ( !((it->first) == 0) || (it->first).internal_type == VAR_INTEGER || (it->first).internal_type == VAR_FLOAT))) ? (it->first).c_long() + 1 : last;
 
 	internal_map.push_back(pair<var,var>(var(last), param));
 	return (var&)(operator[](last));
@@ -952,27 +953,27 @@ var& var::operator <<(const var& param)
 var var::num() const
 {
 	var retval;
-	switch(type)
+	switch(internal_type)
 	{
 		case VAR_STRING:
 			retval.internal_double = atof(internal_string.c_str());
 			retval.internal_long = (long)retval.internal_double;
-			retval.type = (retval.internal_double == retval.internal_long) ? VAR_INTEGER : VAR_FLOAT;
+			retval.internal_type = (retval.internal_double == retval.internal_long) ? VAR_INTEGER : VAR_FLOAT;
 			break;
 
 		case VAR_INTEGER:
 			retval.internal_long = internal_long;
-			retval.type = VAR_INTEGER;
+			retval.internal_type = VAR_INTEGER;
 			break;
 
 		case VAR_FLOAT:
 			retval.internal_double = internal_double;
-			retval.type = VAR_FLOAT;
+			retval.internal_type = VAR_FLOAT;
 			break;
 
 		case VAR_NULL:
 			retval.internal_long = 0;
-			retval.type = VAR_INTEGER;
+			retval.internal_type = VAR_INTEGER;
 			break;
 	}
 
@@ -981,7 +982,7 @@ var var::num() const
 
 long var::c_long() const
 {
-	switch(type)
+	switch(internal_type)
 	{
 		case VAR_BOOLEAN:
 			return internal_bool ? 1 : 0;
@@ -1002,7 +1003,7 @@ long var::c_long() const
 
 double var::c_double() const
 {
-	switch(type)
+	switch(internal_type)
 	{
 		case VAR_BOOLEAN:
 			return internal_bool ? 1 : 0;
@@ -1025,7 +1026,7 @@ string var::cpp_string() const
 	string retval;
 	char* buffer = (char*) malloc(32);
 
-	switch(type)
+	switch(internal_type)
 	{
 		case VAR_BOOLEAN:
 			return internal_bool ? "true" : "false";
@@ -1054,4 +1055,9 @@ string var::cpp_string() const
 var::internal_map_type& var::cpp_map()
 {
 	return (internal_map_type&) internal_map;
+}
+
+int var_type(const var& param)
+{
+	return param.internal_type;
 }
