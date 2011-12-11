@@ -944,10 +944,11 @@ var& var::operator <<(const var& param)
 	int last = 0;
 	internal_map_type::iterator it;
 	for(it = internal_map.begin(); it != internal_map.end(); it++)
-		last = ( (it->first) > last || ((it->first) == last && ( !((it->first) == 0) || (it->first).internal_type == VAR_INTEGER || (it->first).internal_type == VAR_FLOAT))) ? (it->first).c_long() + 1 : last;
+		if( (it->first).internal_type == VAR_INTEGER && (it->first).internal_long >= last)
+			last = (it->first).internal_long + 1;
 
 	internal_map.push_back(pair<var,var>(var(last), param));
-	return (var&)(operator[](last));
+	return (var&)(operator[](var(last)));
 }
 
 var var::num() const
