@@ -35,5 +35,4 @@ var.o:
 	g++ src/* -O2 -s -I include -c -Wall -o lib/var.o
 
 clean:
-	rm -rf lib main
-	rm -rf usr
+	rm -rf lib main *.deb
