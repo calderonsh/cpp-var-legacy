@@ -5,8 +5,7 @@ using namespace std;
 
 #include "var.hpp"
 
-var::var()
-{
+var::var() {
 	internal_type = VAR_NULL;
 }
 
@@ -52,7 +51,7 @@ var::var(void* param)
 	internal_type = VAR_RESOURCE;
 }
 
-void var::reset()
+void var::clear()
 {
 	switch(internal_type)
 	{
@@ -73,10 +72,16 @@ void var::reset()
 
 		case VAR_FLOAT:
 			internal_double = 0;
+
 			break;
 
 		case VAR_MAP:
 			internal_map.clear();
+
+			break;
+
+		case VAR_VECTOR:
+			internal_vector.clear();
 
 			break;
 
@@ -91,7 +96,7 @@ void var::reset()
 
 var var::operator =(const var& param)
 {
-	this->reset();
+	this->clear();
 
 	switch(param.internal_type)
 	{
@@ -122,6 +127,12 @@ var var::operator =(const var& param)
 		case VAR_MAP:
 			internal_map = param.internal_map;
 			internal_type = VAR_MAP;
+
+			break;
+
+		case VAR_VECTOR:
+			internal_vector = param.internal_vector;
+			internal_type = VAR_VECTOR;
 
 			break;
 
@@ -919,9 +930,13 @@ long var::operator |(const var& param)
 
 var& var::operator[](const var& param)
 {
-	if(internal_type != VAR_MAP) {
-		reset();
+	if(internal_type != VAR_MAP && internal_type != VAR_VECTOR) {
+		this->clear();
 		internal_type = VAR_MAP;
+	}
+
+	if(internal_type == VAR_VECTOR) {
+		return (var&)internal_vector[param.c_long()];
 	}
 
 	internal_map_type::iterator iterador;
@@ -936,9 +951,15 @@ var& var::operator[](const var& param)
 
 var& var::operator <<(const var& param)
 {
-	if(internal_type != VAR_MAP){
-		reset();
-		internal_type = VAR_MAP;
+	if(internal_type != VAR_VECTOR && internal_type != VAR_MAP) {
+		this->clear();
+		internal_type = VAR_VECTOR;
+	}
+
+	if(internal_type == VAR_VECTOR)
+	{
+		internal_vector.push_back(param);
+		return (var&) internal_vector[internal_vector.size()-1];
 	}
 
 	int last = 0;
@@ -949,6 +970,22 @@ var& var::operator <<(const var& param)
 
 	internal_map.push_back(pair<var,var>(var(last), param));
 	return (var&)(operator[](var(last)));
+}
+
+long var::size() const {
+	switch(internal_type)
+	{
+		case VAR_STRING:
+			return internal_string.length();
+
+		case VAR_MAP:
+			return internal_map.size();
+
+		case VAR_VECTOR:
+			return internal_vector.size();
+	}
+
+	return 0;
 }
 
 var var::num() const
@@ -1053,12 +1090,14 @@ string var::cpp_string() const
 	return retval;
 }
 
-var::internal_map_type& var::cpp_map()
-{
+var::internal_map_type& var::cpp_map() {
 	return (internal_map_type&) internal_map;
 }
 
-int var_type(const var& param)
-{
+var::internal_vector_type& var::cpp_vector() {
+	return (internal_vector_type&) internal_vector;
+}
+
+int var_type(const var& param) {
 	return param.internal_type;
 }

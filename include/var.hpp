@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 
 enum {
 	VAR_NULL,
@@ -11,12 +12,14 @@ enum {
 	VAR_FLOAT,
 	VAR_STRING,
 	VAR_MAP,
+	VAR_VECTOR,
 	VAR_RESOURCE
 };
 
 class var {
 	public:
 		typedef std::list < std::pair<var, var> > internal_map_type;
+		typedef std::vector <var> internal_vector_type;
 
 	private:
 		unsigned	internal_type;
@@ -28,6 +31,7 @@ class var {
 		void*		internal_resource;
 
 		internal_map_type internal_map;
+		internal_vector_type internal_vector;
 
 		var num() const;
 
@@ -43,7 +47,7 @@ class var {
 		var(const std::string&);
 		var(void*);
 
-		void reset();
+		void clear();
 
 		var operator =(const var&);
 
@@ -65,13 +69,15 @@ class var {
 		var& operator [](const var&);
 		var& operator <<(const var&);
 
+		long size() const;
+
 		friend int var_type(const var&);
 
 		long c_long() const;
 		double c_double() const;
 		std::string cpp_string() const;
 		internal_map_type& cpp_map();
-
+		internal_vector_type& cpp_vector();
 };
 
 int var_type(const var&);
