@@ -27,7 +27,7 @@ deb: var.o
 	dpkg -b deb/ .
 	rm -rf deb
 
-main:
+main: main.cpp var.o
 	g++ lib/var.o main.cpp -O2 -s -I include -o main
 
 var.o:

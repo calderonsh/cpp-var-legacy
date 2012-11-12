@@ -95,6 +95,9 @@ class var {
 		std::string cpp_string() const;
 		internal_map_type& cpp_map();
 		internal_vector_type& cpp_vector();
+
+		std::string encode();
+		int decode(std::string);
 };
 
 int var_type(const var&);

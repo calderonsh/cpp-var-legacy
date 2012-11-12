@@ -60,7 +60,7 @@ void var::clear()
 			break;
 
 		case VAR_STRING:
-			internal_string = "";
+			internal_string.clear();
 			break;
 
 		case VAR_INTEGER:
@@ -1179,7 +1179,6 @@ bool var::fetch(var& key, var& value)
 	switch(internal_type)
 	{
 		case VAR_MAP:
-			//exit(0);
 			if (internal_map_iterator == internal_map.end())
 			{
 				internal_map_iterator = internal_map.begin();
@@ -1201,7 +1200,25 @@ bool var::fetch(var& key, var& value)
 			}
 			return true;
 
-		case VAR_VECTOR:
+		case VAR_VECTOR: //TODO
+			if ( (unsigned) internal_long >= internal_vector.size())
+			{
+				internal_long = 0;
+				key = internal_long;
+				value = internal_vector[internal_long];
+
+				return true;
+			}
+			else
+			{
+				internal_long++;
+
+				if ( (unsigned) internal_long >= internal_vector.size()) {
+					return false;
+				}
+				key = internal_long;
+				value = internal_vector[internal_long];
+			}
 			return true;
 	}
 	return false;
@@ -1403,6 +1420,68 @@ var::internal_map_type& var::cpp_map() {
 
 var::internal_vector_type& var::cpp_vector() {
 	return (internal_vector_type&) internal_vector;
+}
+
+std::string var::encode()
+{
+	string retval;
+	char* buffer = (char*) malloc(32);
+
+	switch(internal_type)
+	{
+		case VAR_BOOLEAN:
+			return internal_bool ? "true" : "false";
+
+		case VAR_INTEGER:
+			sprintf(buffer,"%li", internal_long);
+			break;
+
+		case VAR_FLOAT:
+			sprintf(buffer,"%f", internal_double);
+			break;
+
+		case VAR_STRING:
+			return "\"" + internal_string + "\"";
+
+		case VAR_MAP:
+			retval = "{";
+
+			for(internal_map_type::iterator it = internal_map.begin(); it != internal_map.end(); it++) {
+				retval += (it)->first.encode() + ":" + (it)->second.encode() + ",";
+			}
+
+			retval[retval.size()-1] = '}';
+
+			return retval;
+
+		case VAR_VECTOR:
+			retval = "[";
+
+			for(unsigned i = 0; i < internal_vector.size(); i++) {
+				retval += internal_vector[i].encode() + ",";
+			}
+
+			retval[retval.size()-1] = ']';
+
+			return retval;
+
+		case VAR_RESOURCE: //TODO
+			sprintf(buffer,"0");
+			break;
+
+		default:
+			sprintf(buffer,"0");
+	}
+
+	retval = buffer;
+	free(buffer);
+
+	return retval;
+}
+
+int var::decode(std::string data)
+{
+	return 1;
 }
 
 int var_type(const var& param) {
