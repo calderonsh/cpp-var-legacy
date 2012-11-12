@@ -12,7 +12,9 @@ enum {
 	VAR_FLOAT,
 	VAR_STRING,
 	VAR_MAP,
+	VAR_MAP_ITERATOR,
 	VAR_VECTOR,
+	VAR_VECTOR_ITERATOR,
 	VAR_RESOURCE
 };
 
@@ -31,7 +33,10 @@ class var {
 		void*		internal_resource;
 
 		internal_map_type internal_map;
+		internal_map_type::iterator internal_map_iterator;
+
 		internal_vector_type internal_vector;
+		internal_vector_type::iterator internal_vector_iterator;
 
 		var num() const;
 
@@ -56,7 +61,11 @@ class var {
 		var operator *(const var&);
 		var operator /(const var&);
 
+		var operator ++(int);
+		var operator --(int);
+
 		bool operator ==(const var&);
+		bool operator !=(const var&);
 
 		bool operator <(const var&);
 		bool operator >(const var&);
@@ -68,6 +77,14 @@ class var {
 
 		var& operator [](const var&);
 		var& operator <<(const var&);
+
+		bool fetch(var& key, var& value);
+
+		var key();
+		var& operator *();
+
+		var begin();
+		var end();
 
 		long size() const;
 

@@ -57,37 +57,34 @@ void var::clear()
 	{
 		case VAR_BOOLEAN:
 			internal_bool = false;
-
 			break;
 
 		case VAR_STRING:
 			internal_string = "";
-
 			break;
 
 		case VAR_INTEGER:
 			internal_long = 0;
-
 			break;
 
 		case VAR_FLOAT:
 			internal_double = 0;
-
 			break;
 
 		case VAR_MAP:
 			internal_map.clear();
-
 			break;
 
 		case VAR_VECTOR:
 			internal_vector.clear();
+			break;
 
+		case VAR_VECTOR_ITERATOR:
+			internal_long = 0;
 			break;
 
 		case VAR_RESOURCE:
 			internal_resource = NULL;
-
 			break;
 	}
 
@@ -130,15 +127,28 @@ var var::operator =(const var& param)
 
 			break;
 
+		case VAR_MAP_ITERATOR:
+			internal_map_iterator = param.internal_map_iterator;
+			internal_type = VAR_MAP_ITERATOR;
+
+			break;
+
 		case VAR_VECTOR:
 			internal_vector = param.internal_vector;
 			internal_type = VAR_VECTOR;
 
 			break;
 
+		case VAR_VECTOR_ITERATOR:
+			internal_vector_iterator = param.internal_vector_iterator;
+			internal_type = VAR_VECTOR_ITERATOR;
+
+			break;
+
 		case VAR_RESOURCE:
 			internal_resource = param.internal_resource;
 			internal_type = VAR_RESOURCE;
+
 			break;
 
 		case VAR_NULL:
@@ -427,6 +437,55 @@ var var::operator /(const var& param)
 	return retval;
 }
 
+var var::operator ++(int)
+{
+	switch(internal_type)
+	{
+		case VAR_INTEGER:
+			internal_long++;
+			break;
+
+		case VAR_FLOAT:
+			internal_double++;
+			break;
+
+		case VAR_MAP_ITERATOR:
+			internal_map_iterator++;
+			break;
+
+		case VAR_VECTOR_ITERATOR:
+			internal_long++;
+			internal_vector_iterator++;
+			break;
+	}
+
+	return *this;
+}
+
+var var::operator --(int)
+{
+	switch(internal_type)
+	{
+		case VAR_INTEGER:
+			internal_long--;
+			break;
+
+		case VAR_FLOAT:
+			internal_double--;
+			break;
+
+		case VAR_MAP_ITERATOR:
+			internal_map_iterator--;
+			break;
+
+		case VAR_VECTOR_ITERATOR:
+			internal_vector_iterator--;
+			break;
+	}
+
+	return *this;
+}
+
 bool var::operator ==(const var& param)
 {
 	switch(internal_type)
@@ -545,6 +604,142 @@ bool var::operator ==(const var& param)
 	}
 
 	return false;
+}
+
+bool var::operator !=(const var& param)
+{
+	switch(internal_type)
+	{
+		case VAR_BOOLEAN:
+			switch(param.internal_type)
+			{
+				case VAR_BOOLEAN:
+					return internal_bool != param.internal_bool;
+
+				case VAR_INTEGER:
+					return internal_bool != param.internal_long;
+
+				case VAR_FLOAT:
+					return internal_bool != param.internal_double;
+
+				case VAR_NULL:
+					return internal_bool != 0;
+			}
+			break;
+
+		case VAR_STRING:
+			switch(param.internal_type)
+			{
+				case VAR_STRING:
+					return internal_string != param.internal_string ;
+
+				case VAR_INTEGER:
+					for(unsigned i = 0; i < internal_string.length(); i++)
+						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
+							return 0 != param.internal_long;
+
+					return c_double() != param.internal_long;
+
+				case VAR_FLOAT:
+					for(unsigned i = 0; i < internal_string.length(); i++)
+						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
+							return 0 != param.internal_double;
+
+					return c_double() != param.internal_double;
+			}
+			break;
+
+		case VAR_INTEGER:
+			switch(param.internal_type)
+			{
+				case VAR_BOOLEAN:
+					return internal_long != param.internal_bool;
+
+				case VAR_INTEGER:
+					return internal_long != param.internal_long;
+
+				case VAR_FLOAT:
+					return internal_long != param.internal_double;
+
+				case VAR_STRING:
+					for(unsigned i = 0; i < param.internal_string.length(); i++)
+						if( (param.internal_string[i] < '0' || param.internal_string[i] > '9') && param.internal_string[i] != '.')
+							return internal_long != 0;
+
+					return internal_long != param.c_double();
+
+				case VAR_NULL:
+					return internal_long != 0;
+			}
+			break;
+
+		case VAR_FLOAT:
+			switch(param.internal_type)
+			{
+				case VAR_BOOLEAN:
+					return internal_double != param.internal_bool;
+
+				case VAR_INTEGER:
+					return internal_double != param.internal_long;
+
+				case VAR_FLOAT:
+					return internal_double != param.internal_double;
+
+				case VAR_STRING:
+					for(unsigned i = 0; i < param.internal_string.length(); i++)
+						if( (param.internal_string[i] < '0' || param.internal_string[i] > '9') && param.internal_string[i] != '.')
+							return internal_double != 0;
+
+					return internal_double != param.c_double();
+
+				case VAR_NULL:
+					return internal_double != 0;
+			}
+			break;
+
+		case VAR_MAP_ITERATOR:
+			switch(param.internal_type)
+			{
+				case VAR_MAP_ITERATOR:
+					return internal_map_iterator != param.internal_map_iterator;
+			}
+			break;
+
+		case VAR_VECTOR_ITERATOR:
+			switch(param.internal_type)
+			{
+				case VAR_VECTOR_ITERATOR:
+					return internal_vector_iterator != param.internal_vector_iterator;
+			}
+			break;
+
+		case VAR_RESOURCE:
+			if(param.internal_type == VAR_RESOURCE && internal_resource != param.internal_resource)
+				return true;
+			break;
+
+		case VAR_NULL:
+			switch(param.internal_type)
+			{
+				case VAR_BOOLEAN:
+					return 0 != param.internal_bool;
+
+				case VAR_INTEGER:
+					return 0 != param.internal_long;
+
+				case VAR_FLOAT:
+					return 0 != param.internal_double;
+
+				case VAR_STRING:
+					return true;
+
+				case VAR_NULL:
+					return false;
+			}
+			break;
+	}
+
+	return true;
 }
 
 bool var::operator <(const var& param)
@@ -930,19 +1125,25 @@ long var::operator |(const var& param)
 
 var& var::operator[](const var& param)
 {
-	if(internal_type != VAR_MAP && internal_type != VAR_VECTOR) {
+	if (internal_type != VAR_MAP && internal_type != VAR_VECTOR)
+	{
 		this->clear();
 		internal_type = VAR_MAP;
 	}
 
-	if(internal_type == VAR_VECTOR) {
+	if (internal_type == VAR_VECTOR) {
 		return (var&)internal_vector[param.c_long()];
 	}
 
 	internal_map_type::iterator iterador;
-	for(iterador = internal_map.begin(); iterador != internal_map.end(); iterador++)
+	for (iterador = internal_map.begin(); iterador != internal_map.end(); iterador++)
+	{
 		if(iterador->first == param)
+		{
+			internal_map_iterator = internal_map.end();
 			return (var&)(iterador->second);
+		}
+	}
 
 	internal_map.push_back(pair<var,var>(param,var()));
 
@@ -951,7 +1152,8 @@ var& var::operator[](const var& param)
 
 var& var::operator <<(const var& param)
 {
-	if(internal_type != VAR_VECTOR && internal_type != VAR_MAP) {
+	if(internal_type != VAR_VECTOR && internal_type != VAR_MAP)
+	{
 		this->clear();
 		internal_type = VAR_VECTOR;
 	}
@@ -963,16 +1165,121 @@ var& var::operator <<(const var& param)
 	}
 
 	int last = 0;
-	internal_map_type::iterator it;
-	for(it = internal_map.begin(); it != internal_map.end(); it++)
-		if( (it->first).internal_type == VAR_INTEGER && (it->first).internal_long >= last)
-			last = (it->first).internal_long + 1;
+
+	for(internal_map_iterator = internal_map.begin(); internal_map_iterator != internal_map.end(); internal_map_iterator++)
+		if( (internal_map_iterator->first).internal_type == VAR_INTEGER && (internal_map_iterator->first).internal_long >= last)
+			last = (internal_map_iterator->first).internal_long + 1;
 
 	internal_map.push_back(pair<var,var>(var(last), param));
 	return (var&)(operator[](var(last)));
 }
 
-long var::size() const {
+bool var::fetch(var& key, var& value)
+{
+	switch(internal_type)
+	{
+		case VAR_MAP:
+			//exit(0);
+			if (internal_map_iterator == internal_map.end())
+			{
+				internal_map_iterator = internal_map.begin();
+				key = internal_map_iterator->first;
+				value = internal_map_iterator->second;
+
+				return true;
+			}
+			else
+			{
+				internal_map_iterator++;
+
+				if (internal_map_iterator == internal_map.end()) {
+					return false;
+				}
+
+				key = internal_map_iterator->first;
+				value = internal_map_iterator->second;
+			}
+			return true;
+
+		case VAR_VECTOR:
+			return true;
+	}
+	return false;
+}
+
+var var::key()
+{
+	switch(internal_type)
+	{
+		case VAR_MAP_ITERATOR:
+			return (var&) internal_map_iterator->first;
+
+		case VAR_VECTOR_ITERATOR:
+			return internal_long;
+	}
+
+	return (var&) *this;
+}
+
+var& var::operator *()
+{
+	switch(internal_type)
+	{
+		case VAR_MAP_ITERATOR:
+			return (var&) internal_map_iterator->second;
+
+		case VAR_VECTOR_ITERATOR:
+			return (var&) *internal_vector_iterator;
+
+	}
+
+	return (var&) *this;
+}
+
+var var::begin()
+{
+	var retval;
+
+	switch(internal_type)
+	{
+		case VAR_MAP:
+			retval.internal_map_iterator = internal_map.begin();
+			retval.internal_type = VAR_MAP_ITERATOR;
+			return retval;
+
+		case VAR_VECTOR:
+			retval.internal_long = 0;
+			retval.internal_vector_iterator =  internal_vector.begin();
+			retval.internal_type = VAR_VECTOR_ITERATOR;
+			return retval;
+	}
+
+	return 0;
+}
+
+var var::end()
+{
+	var retval;
+
+	switch(internal_type)
+	{
+		case VAR_MAP:
+			retval.internal_map_iterator =  internal_map.end();
+			retval.internal_type = VAR_MAP_ITERATOR;
+			return retval;
+
+		case VAR_VECTOR:
+			retval.internal_long = internal_vector.size();
+			retval.internal_vector_iterator =  internal_vector.end();
+			retval.internal_type = VAR_VECTOR_ITERATOR;
+			return retval;
+	}
+
+	return 0;
+}
+
+long var::size() const
+{
 	switch(internal_type)
 	{
 		case VAR_STRING:
