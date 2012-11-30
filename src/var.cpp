@@ -518,14 +518,14 @@ bool var::operator ==(const var& param)
 						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
 							return 0 == param.internal_long;
 
-					return c_double() == param.internal_long;
+					return operator double() == param.internal_long;
 
 				case VAR_FLOAT:
 					for(unsigned i = 0; i < internal_string.length(); i++)
 						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
 							return 0 == param.internal_double;
 
-					return c_double() == param.internal_double;
+					return operator double() == param.internal_double;
 			}
 			break;
 
@@ -546,7 +546,7 @@ bool var::operator ==(const var& param)
 						if( (param.internal_string[i] < '0' || param.internal_string[i] > '9') && param.internal_string[i] != '.')
 							return internal_long == 0;
 
-					return internal_long == param.c_double();
+					return internal_long == (double)param;
 
 				case VAR_NULL:
 					return internal_long == 0;
@@ -570,7 +570,7 @@ bool var::operator ==(const var& param)
 						if( (param.internal_string[i] < '0' || param.internal_string[i] > '9') && param.internal_string[i] != '.')
 							return internal_double == 0;
 
-					return internal_double == param.c_double();
+					return internal_double == (double)param;
 
 				case VAR_NULL:
 					return internal_double == 0;
@@ -638,14 +638,14 @@ bool var::operator !=(const var& param)
 						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
 							return 0 != param.internal_long;
 
-					return c_double() != param.internal_long;
+					return operator double() != param.internal_long;
 
 				case VAR_FLOAT:
 					for(unsigned i = 0; i < internal_string.length(); i++)
 						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
 							return 0 != param.internal_double;
 
-					return c_double() != param.internal_double;
+					return operator double() != param.internal_double;
 			}
 			break;
 
@@ -666,7 +666,7 @@ bool var::operator !=(const var& param)
 						if( (param.internal_string[i] < '0' || param.internal_string[i] > '9') && param.internal_string[i] != '.')
 							return internal_long != 0;
 
-					return internal_long != param.c_double();
+					return internal_long != (double)param;
 
 				case VAR_NULL:
 					return internal_long != 0;
@@ -690,7 +690,7 @@ bool var::operator !=(const var& param)
 						if( (param.internal_string[i] < '0' || param.internal_string[i] > '9') && param.internal_string[i] != '.')
 							return internal_double != 0;
 
-					return internal_double != param.c_double();
+					return internal_double != (double)param;
 
 				case VAR_NULL:
 					return internal_double != 0;
@@ -775,14 +775,14 @@ bool var::operator <(const var& param)
 						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
 							return 0 < param.internal_long;
 
-					return c_double() < param.internal_long;
+					return operator double() < param.internal_long;
 
 				case VAR_FLOAT:
 					for(unsigned i = 0; i < internal_string.length(); i++)
 						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
 							return 0 < param.internal_double;
 
-					return c_double() < param.internal_double;
+					return operator double() < param.internal_double;
 			}
 			break;
 
@@ -803,7 +803,7 @@ bool var::operator <(const var& param)
 						if( (param.internal_string[i] < '0' || param.internal_string[i] > '9') && param.internal_string[i] != '.')
 							return internal_long < 0;
 
-					return internal_long < param.c_double();
+					return internal_long < (double)param;
 
 				case VAR_NULL:
 					return internal_long < 0;
@@ -827,7 +827,7 @@ bool var::operator <(const var& param)
 						if( (param.internal_string[i] < '0' || param.internal_string[i] > '9') && param.internal_string[i] != '.')
 							return internal_double < 0;
 
-					return internal_double < param.c_double();
+					return internal_double < (double)param;
 
 				case VAR_NULL:
 					return internal_double < 0;
@@ -890,14 +890,14 @@ bool var::operator >(const var& param)
 						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
 							return 0 > param.internal_long;
 
-					return c_double() > param.internal_long;
+					return operator double() > param.internal_long;
 
 				case VAR_FLOAT:
 					for(unsigned i = 0; i < internal_string.length(); i++)
 						if( (internal_string[i] < '0' || internal_string[i] > '9') && internal_string[i] != '.')
 							return 0 > internal_double;
 
-					return c_double() > param.internal_double;
+					return operator double() > param.internal_double;
 			}
 			break;
 
@@ -914,7 +914,7 @@ bool var::operator >(const var& param)
 					return internal_long > param.internal_double;
 
 				case VAR_STRING:
-					return internal_long > param.c_double();
+					return internal_long > (double)param;
 
 				case VAR_NULL:
 					return internal_long > 0;
@@ -934,7 +934,7 @@ bool var::operator >(const var& param)
 					return internal_double > param.internal_double;
 
 				case VAR_STRING:
-					return internal_double > param.c_double();
+					return internal_double > (double)param;
 
 				case VAR_NULL:
 					return internal_double > 0;
@@ -1132,7 +1132,7 @@ var& var::operator[](const var& param)
 	}
 
 	if (internal_type == VAR_VECTOR) {
-		return (var&)internal_vector[param.c_long()];
+		return (var&)internal_vector[(long)param];
 	}
 
 	internal_map_type::iterator iterador;
@@ -1149,6 +1149,7 @@ var& var::operator[](const var& param)
 
 	return (var&)(operator[](param));
 }
+
 
 var& var::operator <<(const var& param)
 {
@@ -1173,6 +1174,9 @@ var& var::operator <<(const var& param)
 	internal_map.push_back(pair<var,var>(var(last), param));
 	return (var&)(operator[](var(last)));
 }
+
+var var:: operator +(const char* a) { return operator +(var(a)); }
+var& var:: operator [](const char* a) { return operator[](var(a)); }
 
 bool var::fetch(var& key, var& value)
 {
@@ -1342,7 +1346,30 @@ var var::num() const
 	return retval;
 }
 
-long var::c_long() const
+var::operator bool() const
+{
+	switch(internal_type)
+	{
+		case VAR_BOOLEAN:
+			return internal_bool;
+
+		case VAR_STRING:
+			return atof(internal_string.c_str()) ? true : false;
+
+		case VAR_INTEGER:
+			return internal_long ? true : false;
+
+		case VAR_FLOAT:
+			return internal_double ? true : false;
+
+		case VAR_RESOURCE:
+			return internal_resource ? true : false;
+	}
+
+	return false;
+}
+
+var::operator long() const
 {
 	switch(internal_type)
 	{
@@ -1363,7 +1390,7 @@ long var::c_long() const
 	return 0;
 }
 
-double var::c_double() const
+var::operator double() const
 {
 	switch(internal_type)
 	{
@@ -1412,6 +1439,15 @@ string var::cpp_string() const
 	free(buffer);
 
 	return retval;
+}
+
+var::operator void *() const
+{
+	if (internal_type == VAR_RESOURCE) {
+		return internal_resource;
+	} else {
+		return NULL;
+	}
 }
 
 var::internal_map_type& var::cpp_map() {
@@ -1479,7 +1515,7 @@ std::string var::encode()
 	return retval;
 }
 
-int var::decode(std::string data)
+int var::decode(std::string data) //TODO
 {
 	return 1;
 }

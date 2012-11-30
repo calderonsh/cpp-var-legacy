@@ -76,7 +76,11 @@ class var {
 		long operator |(const var&);
 
 		var& operator [](const var&);
+
 		var& operator <<(const var&);
+
+		var operator +(const char*);
+		var& operator [](const char*);
 
 		bool fetch(var& key, var& value);
 
@@ -90,8 +94,10 @@ class var {
 
 		friend int var_type(const var&);
 
-		long c_long() const;
-		double c_double() const;
+		operator bool() const;
+		operator long() const;
+		operator double() const;
+		operator void *() const;
 		std::string cpp_string() const;
 		internal_map_type& cpp_map();
 		internal_vector_type& cpp_vector();
