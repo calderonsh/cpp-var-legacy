@@ -45,6 +45,7 @@ class var {
 
 		var(const bool&);
 		var(const int&);
+		var(const unsigned int&);
 		var(const long&);
 		var(const double&);
 
@@ -79,7 +80,12 @@ class var {
 
 		var& operator <<(const var&);
 
+		var operator +(const int&);
 		var operator +(const char*);
+		bool operator ==(const bool&);
+		bool operator ==(const int&);
+		bool operator ==(const float&);
+		bool operator <(unsigned int);
 		var& operator [](const char*);
 
 		bool fetch(var& key, var& value);

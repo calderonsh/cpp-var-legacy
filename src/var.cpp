@@ -21,6 +21,12 @@ var::var(const int& param)
 	internal_type = VAR_INTEGER;
 }
 
+var::var(const unsigned int& param)
+{
+	internal_long = param;
+	internal_type = VAR_INTEGER;
+}
+
 var::var(const long& param)
 {
 	internal_long = param;
@@ -1175,7 +1181,12 @@ var& var::operator <<(const var& param)
 	return (var&)(operator[](var(last)));
 }
 
+var var:: operator +(const int& a) { return operator +(var(a)); }
 var var:: operator +(const char* a) { return operator +(var(a)); }
+bool var:: operator ==(const bool& a) { return operator ==(var(a)); }
+bool var:: operator ==(const int& a) { return operator ==(var(a)); }
+bool var:: operator ==(const float& a) { return operator ==(var(a)); }
+bool var:: operator <(unsigned int a) { return operator <(var(a));}
 var& var:: operator [](const char* a) { return operator[](var(a)); }
 
 bool var::fetch(var& key, var& value)
