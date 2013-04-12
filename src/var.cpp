@@ -1186,7 +1186,10 @@ var var:: operator +(const char* a) { return operator +(var(a)); }
 bool var:: operator ==(const bool& a) { return operator ==(var(a)); }
 bool var:: operator ==(const int& a) { return operator ==(var(a)); }
 bool var:: operator ==(const float& a) { return operator ==(var(a)); }
+bool var:: operator ==(const double& a) { return operator ==(var(a)); }
+bool var:: operator ==(const char* a) { return operator ==(var(a)); }
 bool var:: operator <(unsigned int a) { return operator <(var(a));}
+var& var:: operator [](const int& a) { return operator[](var(a)); }
 var& var:: operator [](const char* a) { return operator[](var(a)); }
 
 bool var::fetch(var& key, var& value)

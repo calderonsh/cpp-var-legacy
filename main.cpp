@@ -12,13 +12,13 @@ int main(int argc, char** argv)
 		myVar << "Terceiro";
 		myVar << "Quarto";
 
-	var key, value;
 	for(var i = myVar.begin(); i != myVar.end(); i++)
 	{
 		cout << i.key().cpp_string() << ":" << (*i).cpp_string() << endl;
 		*i = *i + ".";
 	}
 
+	var key, value;
 	while(myVar.fetch(key, value)) {
 		cout << key.cpp_string() << ":" << value.cpp_string() << endl;
 	}

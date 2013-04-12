@@ -85,7 +85,10 @@ class var {
 		bool operator ==(const bool&);
 		bool operator ==(const int&);
 		bool operator ==(const float&);
+		bool operator ==(const double&);
+		bool operator ==(const char*);
 		bool operator <(unsigned int);
+		var& operator [](const int&);
 		var& operator [](const char*);
 
 		bool fetch(var& key, var& value);

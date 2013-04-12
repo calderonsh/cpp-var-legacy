@@ -3,7 +3,7 @@ MAJOR=0
 MINOR=3
 PATCH=0
 
-all: clean var.o main
+all: var.o main
 
 deb: var.o
 	mkdir -p deb/DEBIAN
@@ -28,11 +28,11 @@ deb: var.o
 	rm -rf deb
 
 main: main.cpp var.o
-	g++ lib/var.o main.cpp -O2 -s -I include -o main
+	g++ lib/var.o main.cpp -s -I include -o main
 
 var.o:
 	mkdir -p lib
-	g++ src/* -O2 -s -I include -c -Wall -o lib/var.o
+	g++ src/* -s -I include -c -Wall -o lib/var.o
 
 clean:
 	rm -rf lib main *.deb
