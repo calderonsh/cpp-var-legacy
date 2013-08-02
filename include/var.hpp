@@ -91,6 +91,8 @@ class var {
 		var& operator [](const int&);
 		var& operator [](const char*);
 
+		bool compare(const var& param);
+
 		bool fetch(var& key, var& value);
 
 		var key();

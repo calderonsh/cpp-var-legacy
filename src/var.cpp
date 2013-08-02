@@ -159,7 +159,6 @@ var var::operator =(const var& param)
 
 		case VAR_NULL:
 			internal_type=VAR_NULL;
-
 	}
 
 	return param;
@@ -1137,14 +1136,28 @@ var& var::operator[](const var& param)
 		internal_type = VAR_MAP;
 	}
 
-	if (internal_type == VAR_VECTOR) {
-		return (var&)internal_vector[(long)param];
+	if (internal_type == VAR_VECTOR)
+	{
+		if (param.internal_type == VAR_INTEGER) {
+			return (var&)internal_vector[(long)param];
+		} else
+		{
+			for (unsigned i = 0; i < internal_vector.size(); i++)
+			{
+				internal_map.push_back(pair<var,var>(i, internal_vector[i]));
+				internal_vector[i].clear();
+			}
+
+			internal_vector.clear();
+
+			internal_type = VAR_MAP;
+		}
 	}
 
 	internal_map_type::iterator iterador;
 	for (iterador = internal_map.begin(); iterador != internal_map.end(); iterador++)
 	{
-		if(iterador->first == param)
+		if((iterador->first).compare(param))
 		{
 			internal_map_iterator = internal_map.end();
 			return (var&)(iterador->second);
@@ -1171,11 +1184,14 @@ var& var::operator <<(const var& param)
 		return (var&) internal_vector[internal_vector.size()-1];
 	}
 
-	int last = 0;
+	var last = 0;
 
-	for(internal_map_iterator = internal_map.begin(); internal_map_iterator != internal_map.end(); internal_map_iterator++)
-		if( (internal_map_iterator->first).internal_type == VAR_INTEGER && (internal_map_iterator->first).internal_long >= last)
-			last = (internal_map_iterator->first).internal_long + 1;
+	for (internal_map_iterator = internal_map.begin(); internal_map_iterator != internal_map.end(); internal_map_iterator++)
+	{
+		if (internal_map_iterator->first.num().compare(last) ) {
+			last = (last > internal_map_iterator->first.num() ? last : internal_map_iterator->first.num() ) + 1;
+		}
+	}
 
 	internal_map.push_back(pair<var,var>(var(last), param));
 	return (var&)(operator[](var(last)));
@@ -1191,6 +1207,15 @@ bool var:: operator ==(const char* a) { return operator ==(var(a)); }
 bool var:: operator <(unsigned int a) { return operator <(var(a));}
 var& var:: operator [](const int& a) { return operator[](var(a)); }
 var& var:: operator [](const char* a) { return operator[](var(a)); }
+
+bool var::compare(const var& param)
+{
+	if (this->internal_type != param.internal_type) {
+		return false;
+	}
+
+	return (*this == param);
+}
 
 bool var::fetch(var& key, var& value)
 {
@@ -1438,7 +1463,7 @@ string var::cpp_string() const
 			return  internal_string;
 
 		case VAR_INTEGER:
-			sprintf(buffer,"%li", internal_long);
+			sprintf(buffer,"%ld", internal_long);
 			break;
 
 		case VAR_FLOAT:

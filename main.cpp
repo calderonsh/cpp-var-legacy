@@ -1,29 +1,35 @@
+#include <stdio.h>
 #include <iostream>
+
 #include "var.hpp"
-using namespace std;
+
+inline var operator+(int a, var b) {return var(a) + b;}
+inline var operator+(float a, var b) {return var(a) + b;}
+inline var operator+(double a, var b) {return var(a) + b;}
+inline var operator+(const char* a, var b) {return var(a) + b;}
 
 int main(int argc, char** argv)
 {
-	var myVar;
-		myVar ["a"] = "Primeiro";
-		myVar << "Segundo";
-		myVar << 30.0f;
+	var sobrenome = " Passos";
 
-		myVar << "Terceiro";
-		myVar << "Quarto";
+	var nome = "Miguel" + sobrenome + " Calderon";
 
-	for(var i = myVar.begin(); i != myVar.end(); i++)
+	std::cout << nome.cpp_string() << std::endl;
+	/*var myVar = 1;
+
+	myVar << "Celso";
+	myVar << " Donabella";
+
+	myVar["Miguel"] = "Calderon";
+
+	myVar <<  "Volpi";
+
+	/*for (var value = myVar.begin(); value != myVar.end(); value++)
 	{
-		cout << i.key().cpp_string() << ":" << (*i).cpp_string() << endl;
-		*i = *i + ".";
-	}
+		std::cout<< value.key().cpp_string() << ":" << (*value).cpp_string() << std::endl;
+	}*/
 
-	var key, value;
-	while(myVar.fetch(key, value)) {
-		cout << key.cpp_string() << ":" << value.cpp_string() << endl;
-	}
-
-	std::cout << myVar.encode() << std::endl;
+	//std::cout << myVar.encode() << std::endl;
 
 	return 0;
 }
