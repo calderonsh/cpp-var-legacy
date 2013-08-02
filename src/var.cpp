@@ -1480,6 +1480,11 @@ string var::cpp_string() const
 	return retval;
 }
 
+var::operator const char*() const
+{
+	return this->cpp_string().c_str();
+}
+
 var::operator void *() const
 {
 	if (internal_type == VAR_RESOURCE) {
@@ -1499,7 +1504,7 @@ var::internal_vector_type& var::cpp_vector() {
 
 std::string var::encode()
 {
-	string retval;
+	std::string retval;
 	char* buffer = (char*) malloc(32);
 
 	switch(internal_type)

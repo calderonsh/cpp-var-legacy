@@ -108,6 +108,7 @@ class var {
 		operator bool() const;
 		operator long() const;
 		operator double() const;
+		operator const char*() const;
 		operator void *() const;
 		std::string cpp_string() const;
 		internal_map_type& cpp_map();
@@ -117,6 +118,9 @@ class var {
 		int decode(std::string);
 };
 
+inline var operator+(const char* a, var b) {return var(a) + b;}
+
 int var_type(const var&);
 
-#endif
+
+#endif /* CPP_VAR */

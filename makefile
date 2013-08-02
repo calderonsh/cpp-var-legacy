@@ -28,11 +28,11 @@ deb: var.o
 	rm -rf deb
 
 main: main.cpp var.o
-	g++ lib/var.o main.cpp -s -I include -o main
+	g++ lib/var.o main.cpp -I include -o main
 
 var.o:
 	mkdir -p lib
-	g++ src/* -s -I include -c -Wall -o lib/var.o
+	g++ src/* -I include -c -Wall -o lib/var.o
 
 clean:
 	rm -rf lib main *.deb
