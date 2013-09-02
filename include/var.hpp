@@ -18,7 +18,8 @@ enum {
 	VAR_RESOURCE
 };
 
-class var {
+class var
+{
 	public:
 		typedef std::list < std::pair<var, var> > internal_map_type;
 		typedef std::vector <var> internal_vector_type;

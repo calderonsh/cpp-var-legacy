@@ -26,6 +26,7 @@ int main(int argc, char** argv)
 
 	var serialized = linguagens.encode();
 
+
 	printf((const char*)serialized);
 
 	return 0;

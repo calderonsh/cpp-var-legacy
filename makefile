@@ -3,7 +3,7 @@ MINOR=3
 PATCH=0
 
 #General purpouse
-all: deb main
+all: main
 
 clean:
 	rm -rf dist lib main
@@ -25,8 +25,8 @@ deb: var.o
 
 	mkdir -p deb/usr/lib/
 	cp lib/var.o deb/usr/lib/libvar.a
-	mkdir -p && dpkg -b deb/ dist
-	rm -rf dist
+	mkdir -p dist && dpkg -b deb/ dist/
+	rm -rf deb
 
 main: main.cpp var.o
 	g++ lib/var.o main.cpp -I include -o main

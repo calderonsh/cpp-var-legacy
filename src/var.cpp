@@ -1140,7 +1140,13 @@ var& var::operator[](const var& param)
 	{
 		if (param.internal_type == VAR_INTEGER)
 		{
-			if (internal_vector.size() < (long)param) {
+			long i = (long)param;
+
+			while (i < 0) {
+				i += internal_vector.size();
+			}
+
+			if (internal_vector.size() < (unsigned int)(long)param) {
 				internal_vector.resize((long)param + 1);
 			}
 
@@ -1174,7 +1180,6 @@ var& var::operator[](const var& param)
 
 	return (var&)(operator[](param));
 }
-
 
 var& var::operator <<(const var& param)
 {
@@ -1453,10 +1458,13 @@ var::operator double() const
 string var::cpp_string() const
 {
 	string retval;
-	char* buffer = (char*) malloc(32);
+	char* buffer;
 
 	switch(internal_type)
 	{
+		case VAR_NULL:
+			return "";
+
 		case VAR_BOOLEAN:
 			return internal_bool ? "true" : "false";
 
@@ -1464,14 +1472,17 @@ string var::cpp_string() const
 			return  internal_string;
 
 		case VAR_INTEGER:
+			buffer = (char*) malloc(32);
 			sprintf(buffer,"%ld", internal_long);
 			break;
 
 		case VAR_FLOAT:
+			buffer = (char*) malloc(32);
 			sprintf(buffer,"%f", internal_double);
 			break;
 
 		default:
+			buffer = (char*) malloc(32);
 			sprintf(buffer,"0");
 	}
 
@@ -1506,21 +1517,18 @@ var::internal_vector_type& var::cpp_vector() {
 std::string var::encode()
 {
 	std::string retval;
-	char* buffer = (char*) malloc(32);
+	char* buffer;
 	unsigned int pos = 0;
 
 	switch(internal_type)
 	{
+		case VAR_NULL:
+			return "null";
+
 		case VAR_BOOLEAN:
-			return internal_bool ? "true" : "false";
-
 		case VAR_INTEGER:
-			sprintf(buffer,"%li", internal_long);
-			break;
-
 		case VAR_FLOAT:
-			sprintf(buffer,"%f", internal_double);
-			break;
+			return this->cpp_string();
 
 		case VAR_STRING:
 			retval = internal_string;
@@ -1556,11 +1564,8 @@ std::string var::encode()
 
 			return retval;
 
-		case VAR_RESOURCE: //TODO
-			sprintf(buffer,"0");
-			break;
-
 		default:
+			buffer = (char*) malloc(32);
 			sprintf(buffer,"0");
 	}
 
