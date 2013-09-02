@@ -1,7 +1,6 @@
 #include <stdlib.h>
+#include <math.h>
 #include <stdio.h>
-
-using namespace std;
 
 #include "var.hpp"
 
@@ -45,7 +44,7 @@ var::var(const char* param)
 	internal_type = VAR_STRING;
 }
 
-var::var(const string& param)
+var::var(const std::string& param)
 {
 	internal_string = param;
 	internal_type = VAR_STRING;
@@ -166,30 +165,30 @@ var var::operator =(const var& param)
 
 var var::operator +(const var& param)
 {
-	var retval = *this;
+	var result = *this;
 
-	switch(retval.internal_type)
+	switch(result.internal_type)
 	{
 		case VAR_BOOLEAN:
 			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
-					retval.internal_bool = internal_bool || param.internal_bool;
-					retval.internal_type = VAR_BOOLEAN;
+					result.internal_bool = internal_bool || param.internal_bool;
+					result.internal_type = VAR_BOOLEAN;
 
-					return retval;
+					return result;
 
 				case VAR_INTEGER:
-					retval.internal_bool = internal_bool || param.internal_long;
-					retval.internal_type = VAR_BOOLEAN;
+					result.internal_bool = internal_bool || param.internal_long;
+					result.internal_type = VAR_BOOLEAN;
 
-					return retval;
+					return result;
 
 				case VAR_FLOAT:
-					retval.internal_bool = internal_bool || param.internal_double;
-					retval.internal_type = VAR_BOOLEAN;
+					result.internal_bool = internal_bool || param.internal_double;
+					result.internal_type = VAR_BOOLEAN;
 
-					return retval;
+					return result;
 			}
 			break;
 
@@ -197,22 +196,22 @@ var var::operator +(const var& param)
 			switch(param.internal_type)
 			{
 				case VAR_STRING:
-					retval.internal_string += param.internal_string;
-					retval.internal_type = VAR_STRING;
+					result.internal_string += param.internal_string;
+					result.internal_type = VAR_STRING;
 
-					return retval;
+					return result;
 
 				case VAR_INTEGER:
-					retval.internal_string += param.cpp_string();
-					retval.internal_type = VAR_STRING;
+					result.internal_string += param.cpp_string();
+					result.internal_type = VAR_STRING;
 
-					return retval;
+					return result;
 
 				case VAR_FLOAT:
-					retval.internal_string += param.cpp_string();
-					retval.internal_type = VAR_STRING;
+					result.internal_string += param.cpp_string();
+					result.internal_type = VAR_STRING;
 
-					return retval;
+					return result;
 			}
 			break;
 
@@ -221,19 +220,19 @@ var var::operator +(const var& param)
 			{
 				case VAR_STRING:
 
-					return retval + param.num();
+					return result + param.num();
 
 				case VAR_INTEGER:
-					retval.internal_long += param.internal_long;
-					retval.internal_type = VAR_INTEGER;
+					result.internal_long += param.internal_long;
+					result.internal_type = VAR_INTEGER;
 
-					return retval;
+					return result;
 
 				case VAR_FLOAT:
-					retval.internal_double = retval.internal_long + param.internal_double;
-					retval.internal_type = VAR_FLOAT;
+					result.internal_double = result.internal_long + param.internal_double;
+					result.internal_type = VAR_FLOAT;
 
-					return retval;
+					return result;
 			}
 			break;
 
@@ -242,50 +241,50 @@ var var::operator +(const var& param)
 			{
 				case VAR_STRING:
 
-					return retval + param.num();
+					return result + param.num();
 
 				case VAR_INTEGER:
-					retval.internal_double += param.internal_long;
-					retval.internal_type = VAR_FLOAT;
+					result.internal_double += param.internal_long;
+					result.internal_type = VAR_FLOAT;
 
-					return retval;
+					return result;
 
 				case VAR_FLOAT:
-					retval.internal_double += param.internal_double;
-					retval.internal_type = VAR_FLOAT;
+					result.internal_double += param.internal_double;
+					result.internal_type = VAR_FLOAT;
 
-					return retval;
+					return result;
 			}
 			break;
 	}
 
-	return retval;
+	return result;
 }
 
 var var::operator -(const var& param)
 {
-	var retval = this->num();
+	var result = this->num();
 
-	switch(retval.internal_type)
+	switch(result.internal_type)
 	{
 		case VAR_INTEGER:
 			switch(param.internal_type)
 			{
 				case VAR_STRING:
 
-					return retval - param.num();
+					return result - param.num();
 
 				case VAR_INTEGER:
-					retval.internal_long -= param.internal_long;
-					retval.internal_type = VAR_INTEGER;
+					result.internal_long -= param.internal_long;
+					result.internal_type = VAR_INTEGER;
 
-					return retval;
+					return result;
 
 				case VAR_FLOAT:
-					retval.internal_double = retval.internal_long - param.internal_double;
-					retval.internal_type = VAR_FLOAT;
+					result.internal_double = result.internal_long - param.internal_double;
+					result.internal_type = VAR_FLOAT;
 
-					return retval;
+					return result;
 			}
 			break;
 
@@ -294,52 +293,52 @@ var var::operator -(const var& param)
 			{
 				case VAR_STRING:
 
-					return retval - param.num();
+					return result - param.num();
 
 				case VAR_INTEGER:
-					retval.internal_double -= param.internal_long;
-					retval.internal_type = VAR_FLOAT;
+					result.internal_double -= param.internal_long;
+					result.internal_type = VAR_FLOAT;
 
-					return retval;
+					return result;
 
 				case VAR_FLOAT:
-					retval.internal_double -= param.internal_double;
-					retval.internal_type = VAR_FLOAT;
+					result.internal_double -= param.internal_double;
+					result.internal_type = VAR_FLOAT;
 
-					return retval;
+					return result;
 			}
 			break;
 	}
 
-	return retval;
+	return result;
 }
 
 var var::operator *(const var& param)
 {
-	var retval = *this;
+	var result = *this;
 
-	switch(retval.internal_type)
+	switch(result.internal_type)
 	{
 		case VAR_BOOLEAN:
 			switch(param.internal_type)
 			{
 				case VAR_BOOLEAN:
-					retval.internal_bool = internal_bool && param.internal_bool;
-					retval.internal_type = VAR_BOOLEAN;
+					result.internal_bool = internal_bool && param.internal_bool;
+					result.internal_type = VAR_BOOLEAN;
 
-					return retval;
+					return result;
 
 				case VAR_INTEGER:
-					retval.internal_bool = internal_bool && param.internal_long;
-					retval.internal_type = VAR_BOOLEAN;
+					result.internal_bool = internal_bool && param.internal_long;
+					result.internal_type = VAR_BOOLEAN;
 
-					return retval;
+					return result;
 
 				case VAR_FLOAT:
-					retval.internal_bool = internal_bool && param.internal_double;
-					retval.internal_type = VAR_BOOLEAN;
+					result.internal_bool = internal_bool && param.internal_double;
+					result.internal_type = VAR_BOOLEAN;
 
-					return retval;
+					return result;
 			}
 			break;
 
@@ -348,19 +347,19 @@ var var::operator *(const var& param)
 			{
 				case VAR_STRING:
 
-					return retval * param.num();
+					return result * param.num();
 
 				case VAR_INTEGER:
-					retval.internal_long *= param.internal_long;
-					retval.internal_type = VAR_INTEGER;
+					result.internal_long *= param.internal_long;
+					result.internal_type = VAR_INTEGER;
 
-					return retval;
+					return result;
 
 				case VAR_FLOAT:
-					retval.internal_double = retval.internal_long * param.internal_double;
-					retval.internal_type = VAR_FLOAT;
+					result.internal_double = result.internal_long * param.internal_double;
+					result.internal_type = VAR_FLOAT;
 
-					return retval;
+					return result;
 			}
 			break;
 
@@ -369,51 +368,51 @@ var var::operator *(const var& param)
 			{
 				case VAR_STRING:
 
-					return retval * param.num();
+					return result * param.num();
 
 				case VAR_INTEGER:
-					retval.internal_double *= param.internal_long;
-					retval.internal_type = VAR_FLOAT;
+					result.internal_double *= param.internal_long;
+					result.internal_type = VAR_FLOAT;
 
-					return retval;
+					return result;
 
 				case VAR_FLOAT:
-					retval.internal_double *= param.internal_double;
-					retval.internal_type = VAR_FLOAT;
+					result.internal_double *= param.internal_double;
+					result.internal_type = VAR_FLOAT;
 
-					return retval;
+					return result;
 			}
 			break;
 	}
 
-	return retval;
+	return result;
 }
 
 var var::operator /(const var& param)
 {
-	var retval = this->num();
+	var result = this->num();
 
-	switch(retval.internal_type)
+	switch(result.internal_type)
 	{
 		case VAR_INTEGER:
 			switch(param.internal_type)
 			{
 				case VAR_STRING:
 
-					return retval / param.num();
+					return result / param.num();
 
 				case VAR_INTEGER:
-					retval.internal_double = (double)retval.internal_long / param.internal_long;
-					retval.internal_long = (long)retval.internal_double;
-					retval.internal_type = retval.internal_double == retval.internal_long ? VAR_INTEGER : VAR_FLOAT;
+					result.internal_double = (double)result.internal_long / param.internal_long;
+					result.internal_long = (long)result.internal_double;
+					result.internal_type = result.internal_double == result.internal_long ? VAR_INTEGER : VAR_FLOAT;
 
-					return retval;
+					return result;
 
 				case VAR_FLOAT:
-					retval.internal_double = retval.internal_long / param.internal_double;
-					retval.internal_type = VAR_FLOAT;
+					result.internal_double = result.internal_long / param.internal_double;
+					result.internal_type = VAR_FLOAT;
 
-					return retval;
+					return result;
 			}
 			break;
 
@@ -422,24 +421,24 @@ var var::operator /(const var& param)
 			{
 				case VAR_STRING:
 
-					return retval / param.num();
+					return result / param.num();
 
 				case VAR_INTEGER:
-					retval.internal_double /= param.internal_long;
-					retval.internal_type = VAR_FLOAT;
+					result.internal_double /= param.internal_long;
+					result.internal_type = VAR_FLOAT;
 
-					return retval;
+					return result;
 
 				case VAR_FLOAT:
-					retval.internal_double /= param.internal_double;
-					retval.internal_type = VAR_FLOAT;
+					result.internal_double /= param.internal_double;
+					result.internal_type = VAR_FLOAT;
 
-					return retval;
+					return result;
 			}
 			break;
 	}
 
-	return retval;
+	return result;
 }
 
 var var::operator ++(int)
@@ -1128,7 +1127,7 @@ long var::operator |(const var& param)
 	return false;
 }
 
-var& var::operator[](const var& param)
+var& var::operator [](const var& param)
 {
 	if (internal_type != VAR_MAP && internal_type != VAR_VECTOR)
 	{
@@ -1140,23 +1139,23 @@ var& var::operator[](const var& param)
 	{
 		if (param.internal_type == VAR_INTEGER)
 		{
-			long i = (long)param;
+			long i = param;
 
-			while (i < 0) {
-				i += internal_vector.size();
+			if (i < 0) {
+				i += internal_vector.size() * (ceil(fabs(i)/(float)internal_vector.size()));
 			}
 
-			if (internal_vector.size() < (unsigned int)(long)param) {
-				internal_vector.resize((long)param + 1);
+			if (internal_vector.size() < (unsigned int)i) {
+				internal_vector.resize(i + 1);
 			}
 
-			return (var&)internal_vector[(long)param];
+			return (var&)internal_vector[i];
 		}
 		else
 		{
 			for (unsigned i = 0; i < internal_vector.size(); i++)
 			{
-				internal_map.push_back(pair<var,var>(i, internal_vector[i]));
+				internal_map.push_back(std::pair<var,var>(i, internal_vector[i]));
 				internal_vector[i].clear();
 			}
 
@@ -1176,7 +1175,7 @@ var& var::operator[](const var& param)
 		}
 	}
 
-	internal_map.push_back(pair<var,var>(param,var()));
+	internal_map.push_back(std::pair<var,var>(param,var()));
 
 	return (var&)(operator[](param));
 }
@@ -1204,7 +1203,7 @@ var& var::operator <<(const var& param)
 		}
 	}
 
-	internal_map.push_back(pair<var,var>(var(last), param));
+	internal_map.push_back(std::pair<var,var>(var(last), param));
 	return (var&)(operator[](var(last)));
 }
 
@@ -1298,20 +1297,20 @@ var& var::operator *()
 
 var var::begin()
 {
-	var retval;
+	var result;
 
 	switch(internal_type)
 	{
 		case VAR_MAP:
-			retval.internal_map_iterator = internal_map.begin();
-			retval.internal_type = VAR_MAP_ITERATOR;
-			return retval;
+			result.internal_map_iterator = internal_map.begin();
+			result.internal_type = VAR_MAP_ITERATOR;
+			return result;
 
 		case VAR_VECTOR:
-			retval.internal_long = 0;
-			retval.internal_vector_iterator =  internal_vector.begin();
-			retval.internal_type = VAR_VECTOR_ITERATOR;
-			return retval;
+			result.internal_long = 0;
+			result.internal_vector_iterator =  internal_vector.begin();
+			result.internal_type = VAR_VECTOR_ITERATOR;
+			return result;
 	}
 
 	return 0;
@@ -1319,20 +1318,20 @@ var var::begin()
 
 var var::end()
 {
-	var retval;
+	var result;
 
 	switch(internal_type)
 	{
 		case VAR_MAP:
-			retval.internal_map_iterator =  internal_map.end();
-			retval.internal_type = VAR_MAP_ITERATOR;
-			return retval;
+			result.internal_map_iterator =  internal_map.end();
+			result.internal_type = VAR_MAP_ITERATOR;
+			return result;
 
 		case VAR_VECTOR:
-			retval.internal_long = internal_vector.size();
-			retval.internal_vector_iterator =  internal_vector.end();
-			retval.internal_type = VAR_VECTOR_ITERATOR;
-			return retval;
+			result.internal_long = internal_vector.size();
+			result.internal_vector_iterator =  internal_vector.end();
+			result.internal_type = VAR_VECTOR_ITERATOR;
+			return result;
 	}
 
 	return 0;
@@ -1357,32 +1356,32 @@ long var::size() const
 
 var var::num() const
 {
-	var retval;
+	var result;
 	switch(internal_type)
 	{
 		case VAR_STRING:
-			retval.internal_double = atof(internal_string.c_str());
-			retval.internal_long = (long)retval.internal_double;
-			retval.internal_type = (retval.internal_double == retval.internal_long) ? VAR_INTEGER : VAR_FLOAT;
+			result.internal_double = atof(internal_string.c_str());
+			result.internal_long = (long)result.internal_double;
+			result.internal_type = (result.internal_double == result.internal_long) ? VAR_INTEGER : VAR_FLOAT;
 			break;
 
 		case VAR_INTEGER:
-			retval.internal_long = internal_long;
-			retval.internal_type = VAR_INTEGER;
+			result.internal_long = internal_long;
+			result.internal_type = VAR_INTEGER;
 			break;
 
 		case VAR_FLOAT:
-			retval.internal_double = internal_double;
-			retval.internal_type = VAR_FLOAT;
+			result.internal_double = internal_double;
+			result.internal_type = VAR_FLOAT;
 			break;
 
 		case VAR_NULL:
-			retval.internal_long = 0;
-			retval.internal_type = VAR_INTEGER;
+			result.internal_long = 0;
+			result.internal_type = VAR_INTEGER;
 			break;
 	}
 
-	return retval;
+	return result;
 }
 
 var::operator bool() const
@@ -1455,9 +1454,9 @@ var::operator double() const
 	return 0;
 }
 
-string var::cpp_string() const
+std::string var::cpp_string() const
 {
-	string retval;
+	std::string result;
 	char* buffer;
 
 	switch(internal_type)
@@ -1486,10 +1485,10 @@ string var::cpp_string() const
 			sprintf(buffer,"0");
 	}
 
-	retval = buffer;
+	result = buffer;
 	free(buffer);
 
-	return retval;
+	return result;
 }
 
 var::operator const char*() const
@@ -1516,7 +1515,7 @@ var::internal_vector_type& var::cpp_vector() {
 
 std::string var::encode()
 {
-	std::string retval;
+	std::string result;
 	char* buffer;
 	unsigned int pos = 0;
 
@@ -1531,48 +1530,48 @@ std::string var::encode()
 			return this->cpp_string();
 
 		case VAR_STRING:
-			retval = internal_string;
+			result = internal_string;
 
 
-			while((pos = retval.find("\"", pos)) != std::string::npos)
+			while((pos = result.find("\"", pos)) != std::string::npos)
 			{
-				retval.replace(pos, 1, "\\\"");
+				result.replace(pos, 1, "\\\"");
 				pos += 4;
 			}
 
-			return "\"" + retval + "\"";
+			return "\"" + result + "\"";
 
 		case VAR_MAP:
-			retval = "{";
+			result = "{";
 
 			for(internal_map_type::iterator it = internal_map.begin(); it != internal_map.end(); it++) {
-				retval += (it)->first.encode() + ":" + (it)->second.encode() + ",";
+				result += (it)->first.encode() + ":" + (it)->second.encode() + ",";
 			}
 
-			retval[retval.size()-1] = '}';
+			result[result.size()-1] = '}';
 
-			return retval;
+			return result;
 
 		case VAR_VECTOR:
-			retval = "[";
+			result = "[";
 
 			for(unsigned i = 0; i < internal_vector.size(); i++) {
-				retval += internal_vector[i].encode() + ",";
+				result += internal_vector[i].encode() + ",";
 			}
 
-			retval[retval.size()-1] = ']';
+			result[result.size()-1] = ']';
 
-			return retval;
+			return result;
 
 		default:
 			buffer = (char*) malloc(32);
 			sprintf(buffer,"0");
 	}
 
-	retval = buffer;
+	result = buffer;
 	free(buffer);
 
-	return retval;
+	return result;
 }
 
 int var::decode(std::string data) //TODO

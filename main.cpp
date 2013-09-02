@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <iostream>
 
 #include "var.hpp"
 
@@ -8,10 +7,11 @@ int main(int argc, char** argv)
 {
 	var linguagens;
 
-	linguagens << "PHP";	//0
-	linguagens << "ASP";	//1
-	linguagens << "C++";	//2
-	linguagens << "Python";	//3
+	linguagens << "PHP";	//0	-5
+	linguagens << "ASP";	//1	-4
+	linguagens << "C-Ansi";	//2	-3
+	linguagens << "C++";	//3	-2
+	linguagens << "Python";	//4	-1
 
 	var asp;
 	asp["nome"] = linguagens[1];
@@ -26,8 +26,8 @@ int main(int argc, char** argv)
 
 	var serialized = linguagens.encode();
 
-
 	printf((const char*)serialized);
+	printf("\n%s\n", (const char*)linguagens[-1]);
 
 	return 0;
 }

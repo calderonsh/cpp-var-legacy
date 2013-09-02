@@ -12,7 +12,7 @@ clean:
 
 
 #Linux directives
-deb: var.o
+deb: lib/var.o
 	mkdir -p deb/DEBIAN
 
 	cat unix/control.in | sed \
@@ -28,10 +28,10 @@ deb: var.o
 	mkdir -p dist && dpkg -b deb/ dist/
 	rm -rf deb
 
-main: main.cpp var.o
-	g++ lib/var.o main.cpp -I include -o main
+main: main.cpp lib/var.o
+	g++ lib/var.o main.cpp -I include -Wall -Werror -o main
 
-var.o:
+lib/var.o: src/var.cpp include/var.hpp
 	mkdir -p lib
-	g++ src/* -I include -c -Wall -o lib/var.o
+	g++ src/var.cpp -I include -c -Wall -Werror -o lib/var.o
 
