@@ -1138,9 +1138,15 @@ var& var::operator[](const var& param)
 
 	if (internal_type == VAR_VECTOR)
 	{
-		if (param.internal_type == VAR_INTEGER) {
+		if (param.internal_type == VAR_INTEGER)
+		{
+			if (internal_vector.size() < (long)param) {
+				internal_vector.resize((long)param + 1);
+			}
+
 			return (var&)internal_vector[(long)param];
-		} else
+		}
+		else
 		{
 			for (unsigned i = 0; i < internal_vector.size(); i++)
 			{
@@ -1196,17 +1202,6 @@ var& var::operator <<(const var& param)
 	internal_map.push_back(pair<var,var>(var(last), param));
 	return (var&)(operator[](var(last)));
 }
-
-var var:: operator +(const int& a) { return operator +(var(a)); }
-var var:: operator +(const char* a) { return operator +(var(a)); }
-bool var:: operator ==(const bool& a) { return operator ==(var(a)); }
-bool var:: operator ==(const int& a) { return operator ==(var(a)); }
-bool var:: operator ==(const float& a) { return operator ==(var(a)); }
-bool var:: operator ==(const double& a) { return operator ==(var(a)); }
-bool var:: operator ==(const char* a) { return operator ==(var(a)); }
-bool var:: operator <(unsigned int a) { return operator <(var(a));}
-var& var:: operator [](const int& a) { return operator[](var(a)); }
-var& var:: operator [](const char* a) { return operator[](var(a)); }
 
 bool var::compare(const var& param)
 {
@@ -1401,6 +1396,12 @@ var::operator bool() const
 		case VAR_FLOAT:
 			return internal_double ? true : false;
 
+		case VAR_MAP:
+			return !internal_map.empty();
+
+		case VAR_VECTOR:
+			return !internal_vector.empty();
+
 		case VAR_RESOURCE:
 			return internal_resource ? true : false;
 	}
@@ -1506,6 +1507,7 @@ std::string var::encode()
 {
 	std::string retval;
 	char* buffer = (char*) malloc(32);
+	unsigned int pos = 0;
 
 	switch(internal_type)
 	{
@@ -1521,7 +1523,16 @@ std::string var::encode()
 			break;
 
 		case VAR_STRING:
-			return "\"" + internal_string + "\"";
+			retval = internal_string;
+
+
+			while((pos = retval.find("\"", pos)) != std::string::npos)
+			{
+				retval.replace(pos, 1, "\\\"");
+				pos += 4;
+			}
+
+			return "\"" + retval + "\"";
 
 		case VAR_MAP:
 			retval = "{";
@@ -1563,6 +1574,23 @@ int var::decode(std::string data) //TODO
 {
 	return 1;
 }
+
+var var:: operator +(const int& a) { return operator +(var(a)); }
+var var:: operator +(const char* a) { return operator +(var(a)); }
+bool var:: operator ==(const bool& a) { return operator ==(var(a)); }
+bool var:: operator ==(const int& a) { return operator ==(var(a)); }
+bool var:: operator ==(const float& a) { return operator ==(var(a)); }
+bool var:: operator ==(const double& a) { return operator ==(var(a)); }
+bool var:: operator ==(const char* a) { return operator ==(var(a)); }
+bool var:: operator !=(const int& a) { return operator !=(var(a)); }
+bool var:: operator !=(const char* a) { return operator !=(var(a)); }
+bool var:: operator <(unsigned int a) { return operator <(var(a));}
+var& var:: operator [](const int& a) { return operator[](var(a)); }
+var& var:: operator [](const char* a) { return operator[](var(a)); }
+
+var operator+(char* a, var b) {return var(a) + b;}
+var operator+(const char* a, var b) {return var(a) + b;}
+var::operator int() const { return operator long(); }
 
 int var_type(const var& param) {
 	return param.internal_type;

@@ -87,6 +87,8 @@ class var {
 		bool operator ==(const float&);
 		bool operator ==(const double&);
 		bool operator ==(const char*);
+		bool operator !=(const int&);
+		bool operator !=(const char*);
 		bool operator <(unsigned int);
 		var& operator [](const int&);
 		var& operator [](const char*);
@@ -106,6 +108,7 @@ class var {
 		friend int var_type(const var&);
 
 		operator bool() const;
+		operator int() const;
 		operator long() const;
 		operator double() const;
 		operator const char*() const;
@@ -118,7 +121,8 @@ class var {
 		int decode(std::string);
 };
 
-inline var operator+(const char* a, var b) {return var(a) + b;}
+var operator+(char* a, var b);
+var operator+(const char* a, var b);
 
 int var_type(const var&);
 
