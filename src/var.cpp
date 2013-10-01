@@ -718,7 +718,7 @@ bool var::operator !=(const var& param)
 			break;
 
 		case VAR_RESOURCE:
-			if(param.internal_type == VAR_RESOURCE && internal_resource != param.internal_resource)
+			if(internal_resource != param.internal_resource)
 				return true;
 			break;
 
@@ -1191,7 +1191,7 @@ var& var::operator <<(const var& param)
 	if(internal_type == VAR_VECTOR)
 	{
 		internal_vector.push_back(param);
-		return (var&) internal_vector[internal_vector.size()-1];
+		return *this;
 	}
 
 	var last = 0;
@@ -1204,7 +1204,7 @@ var& var::operator <<(const var& param)
 	}
 
 	internal_map.push_back(std::pair<var,var>(var(last), param));
-	return (var&)(operator[](var(last)));
+	return *this;
 }
 
 bool var::compare(const var& param)

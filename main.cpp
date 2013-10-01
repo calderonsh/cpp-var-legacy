@@ -3,31 +3,28 @@
 #include "var.hpp"
 
 
+var& operator,(var &a, var b)
+{
+	if (var_type(a) != VAR_VECTOR) {
+		var c = a;
+		a << c;
+	}
+	a << b;
+	return a;
+}
+
+void teste(var a, var b)
+{
+	printf("teste : %s:%s\n",(const char*)a, (const char*) b);
+}
+
 int main(int argc, char** argv)
 {
-	var linguagens;
+	var numeroNum = "20";
+	var numeroStr = 27;
 
-	linguagens << "PHP";	//0	-5
-	linguagens << "ASP";	//1	-4
-	linguagens << "C-Ansi";	//2	-3
-	linguagens << "C++";	//3	-2
-	linguagens << "Python";	//4	-1
+	var result = (long int)numeroNum + (long int)numeroStr;
 
-	var asp;
-	asp["nome"] = linguagens[1];
-	asp["qualidade"] = "lixo";
-
-	var cpp;
-	cpp["nome"] = "C e " + linguagens[2];
-	cpp["nota"] = 10;
-
-	linguagens[1] = asp;
-	linguagens[2] = cpp;
-
-	var serialized = linguagens.encode();
-
-	printf((const char*)serialized);
-	printf("\n%s\n", (const char*)linguagens[-1]);
-
+	printf("%s\n", (const char*)result);
 	return 0;
 }
