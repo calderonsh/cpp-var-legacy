@@ -1,3 +1,6 @@
+
+GPPFLAGS=-Wall -Werror -O2 -pedantic
+
 MAJOR=1
 MINOR=3
 PATCH=1
@@ -6,13 +9,13 @@ PATCH=1
 all: main
 
 clean:
-	rm -rf dist lib main
+	rm -rf dist obj main
 
 .PHONY: all deb clean
 
 
 #Linux directives
-deb: lib/var.o
+deb: obj/var.o
 	mkdir -p deb/DEBIAN
 
 	cat unix/control.in | sed \
@@ -21,17 +24,25 @@ deb: lib/var.o
 	 -e s/@PATCH/${PATCH}/g > deb/DEBIAN/control
 
 	mkdir -p deb/usr/include
-	cp include/* deb/usr/include
+	cp -r include/* deb/usr/include
 
 	mkdir -p deb/usr/lib/
-	cp lib/var.o deb/usr/lib/libvar.a
-	mkdir -p dist && dpkg -b deb/ dist/
+	cp obj/var.o deb/usr/lib/libvar.a
+	mkdir -p dist && dpkg -b deb/ dist
 	rm -rf deb
 
-main: main.cpp lib/var.o
-	g++ lib/var.o main.cpp -I include -Wall -Werror -o main
+main: main.cpp obj/var.o
+	g++ obj/var.o main.cpp -I include/var $(GPPINCS) $(GPPFLAGS) -o main
 
-lib/var.o: src/var.cpp include/var.hpp
+obj/var.o: src/var.cpp
+	mkdir -p obj
+	g++ src/var.cpp -I include/var -c $(GPPFLAGS) -o obj/var.o
+
+
+#Windows directives
+main.exe: main.cpp lib/var.lib
+	i586-mingw32msvc-g++ lib/var.lib main.cpp -I include/var $(GPPFLAGS) -o main.exe
+
+lib/var.lib: src/var.cpp
 	mkdir -p lib
-	g++ src/var.cpp -I include -c -Wall -Werror -o lib/var.o
-
+	i586-mingw32msvc-g++ src/var.cpp -I include/var -c $(GPPFLAGS) -o lib/var.lib

@@ -1,30 +1,47 @@
+#include <stdlib.h>
 #include <stdio.h>
 
-#include "var.hpp"
+#include <typeinfo>
 
+#include <var.hpp>
 
-var& operator,(var &a, var b)
+var file_get_contents(const var &filename)
 {
-	if (var_type(a) != VAR_VECTOR) {
-		var c = a;
-		a << c;
+	const char* filename_c = (const char*)filename;
+
+	char *ret_c;
+
+	FILE *file = fopen(filename_c, "r");
+
+	if (file == NULL) {
+		return false;
 	}
-	a << b;
-	return a;
-}
 
-void teste(var a, var b)
-{
-	printf("teste : %s:%s\n",(const char*)a, (const char*) b);
+	fseek (file , 0, SEEK_END);
+	size_t size = ftell(file);
+	rewind (file);
+
+	ret_c = (char*)malloc(size + 1);
+
+	size = fread(ret_c, 1, size, file);
+
+	fclose(file);
+
+	ret_c[size] = '\0';
+	var ret = ret_c;
+	free(ret_c);
+
+	return ret;
 }
 
 int main(int argc, char** argv)
 {
-	var numeroNum = "20";
-	var numeroStr = 27;
+	var beagle;
 
-	var result = (long int)numeroNum + (long int)numeroStr;
+	std::string fileContent = (const char*)file_get_contents("an8.json");
 
-	printf("%s\n", (const char*)result);
+	beagle.decode(fileContent);
+	//printf((const char*) beagle.encode());
+
 	return 0;
 }
