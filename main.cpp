@@ -38,10 +38,9 @@ int main(int argc, char** argv)
 {
 	var beagle;
 
-	std::string fileContent = (const char*)file_get_contents("an8.json");
+	beagle.decode("\"Miguel Passos \nCalderon\"");
 
-	beagle.decode(fileContent);
-	//printf((const char*) beagle.encode());
+	printf((const char*) beagle.encode());
 
 	return 0;
 }

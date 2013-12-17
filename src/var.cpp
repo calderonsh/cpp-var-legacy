@@ -1730,10 +1730,50 @@ inline void var::decodeString(const std::string& data, unsigned& i, std::string&
 	unsigned begin = ++i;
 	for (unsigned j = 0; i < data.length(); i++, j++)
 	{
-		//TODO
-		if (data[i] == '"') {
+		if (data[i] == '\\')
+		{
+			i++; j++;
+			continue;
+		}
+
+		if (data[i] == '"')
+		{
 			value  = data.substr(begin, j);
-			return;
+			break;
+		}
+	}
+
+	/* TODO: Escape string */
+	for (unsigned j = 0; j < value.length(); j++)
+	{
+		if (value[j] == '\\')
+		{
+			switch (value[j+1])
+			{
+				case '\\':
+					value.replace(j-1, 2, "\\");
+					break;
+
+				case '"':
+					value.replace(j-1, 2, "\"");
+					break;
+
+				case '/':
+					value.replace(j-1, 2, "/");
+					break;
+
+				case 'n':
+					value.replace(j-1, 2, "\n");
+					break;
+
+				case 'r':
+					value.replace(j-1, 2, "\r");
+					break;
+
+				case 't':
+					value.replace(j-1, 2, "\t");
+					break;
+			}
 		}
 	}
 }
