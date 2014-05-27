@@ -1553,14 +1553,6 @@ var::operator void *() const
 	}
 }
 
-var::internal_map_type& var::cpp_map() {
-	return (internal_map_type&) this->internal_map;
-}
-
-var::internal_vector_type& var::cpp_vector() {
-	return (internal_vector_type&) this->internal_vector;
-}
-
 var var::encode() const
 {
 	std::string result;
@@ -1846,6 +1838,7 @@ inline void var::decodeVector(const std::string& data, unsigned& i, var::interna
 				value[j] = *it;
 				j++;
 			}
+
 			return;
 		}
 
@@ -1878,8 +1871,6 @@ inline void var::decodeMap(const std::string& data, unsigned& i, var::internal_m
 		decodeSub(data, i, mapValue);
 
 		value[mapKey] = mapValue;
-
-		while (data[i] == ',' || data[i] == ' ' || data[i] == '\n' || data[i] == '\r' || data[i] == '\t') i++; /* [,\s]* */
 	}
 }
 

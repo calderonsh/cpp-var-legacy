@@ -133,8 +133,6 @@ class var
 		operator double() const;
 		operator const char*() const;
 		operator void *() const;
-		internal_map_type& cpp_map();
-		internal_vector_type& cpp_vector();
 
 		var encode() const;
 		var& decode(const var& json);
