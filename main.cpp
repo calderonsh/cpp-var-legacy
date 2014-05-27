@@ -9,16 +9,16 @@
 int main(int argc, char** argv)
 {
 
-	var felipe;
-	felipe.decode("{\"mac\":\"coisa de beesha\",\"debian\":\"coisa de macho\"}");
+	var json;
+	json.decode("{\"mac\":\"coisa de beesha\",\"debian\":\"coisa de macho\"}");
 
-	printf("JSON: %s\n", (const char*)felipe.encode());
-	printf("mac: %s\n", (const char*)felipe["mac"]);
-	printf("debian: %s\n", (const char*)felipe["debian"]);
+	printf("JSON: %s\n", (const char*)json.encode());
+	printf("mac: %s\n", (const char*)json["mac"]);
+	printf("debian: %s\n", (const char*)json["debian"]);
 
 	var splitted = var("Luis,Felipe,Beatriz").split(",").join("|");
 
-	felipe["pedrita"] = splitted;
+	json["pedrita"] = splitted;
 
-	printf("novo JSON: %s\n", (const char*)felipe.encode());
+	printf("novo JSON: %s\n", (const char*)json.encode());
 }

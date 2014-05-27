@@ -2,8 +2,9 @@
 #define __CPP_VAR__
 
 #include <string>
-#include <list>
+#include <map>
 #include <vector>
+#include <list>
 
 
 class var
@@ -24,7 +25,7 @@ class var
 			resource
 		};
 
-		typedef std::list < std::pair<var, var> > internal_map_type;
+		typedef std::map <var, var> internal_map_type;
 		typedef std::vector <var> internal_vector_type;
 
 		static int type(const var& that);

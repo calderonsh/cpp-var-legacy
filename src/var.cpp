@@ -1162,7 +1162,7 @@ var& var::operator [](const var& that)
 		{
 			for (unsigned i = 0; i < this->internal_vector.size(); i++)
 			{
-				this->internal_map.push_back(std::pair<var,var>(i, this->internal_vector[i]));
+				this->internal_map[i] = this->internal_vector[i];
 				this->internal_vector[i].clear();
 			}
 
@@ -1172,18 +1172,7 @@ var& var::operator [](const var& that)
 		}
 	}
 
-	for (internal_map_type::iterator iterador = this->internal_map.begin(); iterador != this->internal_map.end(); iterador++)
-	{
-		if((iterador->first).compare(that))
-		{
-			this->internal_map_iterator = this->internal_map.end();
-			return (var&)(iterador->second);
-		}
-	}
-
-	this->internal_map.push_back(std::pair<var,var>(that,var()));
-
-	return (var&)(operator[](that));
+	return (var&)(this->internal_map[that]);
 }
 
 var& var::operator <<(const var& that)
@@ -1209,7 +1198,8 @@ var& var::operator <<(const var& that)
 		}
 	}
 
-	this->internal_map.push_back(std::pair<var,var>(var(last), that));
+	this->internal_map[var(last)] = that;
+
 	return *this;
 }
 
@@ -1887,7 +1877,7 @@ inline void var::decodeMap(const std::string& data, unsigned& i, var::internal_m
 		mapValue.clear();
 		decodeSub(data, i, mapValue);
 
-		value.push_back(std::make_pair(mapKey, mapValue));
+		value[mapKey] = mapValue;
 
 		while (data[i] == ',' || data[i] == ' ' || data[i] == '\n' || data[i] == '\r' || data[i] == '\t') i++; /* [,\s]* */
 	}
