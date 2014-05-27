@@ -1172,8 +1172,7 @@ var& var::operator [](const var& that)
 		}
 	}
 
-	internal_map_type::iterator iterador;
-	for (iterador = this->internal_map.begin(); iterador != this->internal_map.end(); iterador++)
+	for (internal_map_type::iterator iterador = this->internal_map.begin(); iterador != this->internal_map.end(); iterador++)
 	{
 		if((iterador->first).compare(that))
 		{
@@ -1212,6 +1211,64 @@ var& var::operator <<(const var& that)
 
 	this->internal_map.push_back(std::pair<var,var>(var(last), that));
 	return *this;
+}
+
+var var::split(const var& separator)
+{
+	std::string delimiter_cpp = (const char*)separator;
+	std::string string_cpp = (const char*)(*this);
+	var ret_var;
+	unsigned previous = 0, next = 0;
+
+	if (delimiter_cpp.length() == 0) {
+		return false;
+	}
+
+	while ( (next = string_cpp.find(delimiter_cpp, previous + delimiter_cpp.length()-1)) != std::string::npos)
+	{
+		ret_var << string_cpp.substr(previous, next - previous);
+		previous = next + delimiter_cpp.length();
+	}
+
+	ret_var << string_cpp.substr(previous);
+
+	return ret_var;
+}
+
+var var::join(const var& separator)
+{
+		unsigned length = 0;
+		std::string glue_cpp = (const char*)separator;
+		std::string ret_cpp;
+		var it;
+
+		for (it = (*this).begin(); it != (*this).end(); it++) {
+			length += (*it).size();
+		}
+
+		length += separator.size() * (*this).size();
+		ret_cpp.reserve(length);
+
+		it = (*this).begin();
+
+		while (true)
+		{
+			if (var::type(*it) != var::map && var::type(*it) != var::vector) {
+				ret_cpp += (const char*)(*it);
+			} else {
+				continue;
+			}
+
+			it++;
+
+			if (!(it != (*this).end())) {
+				break;
+			}
+
+			ret_cpp += glue_cpp;
+		}
+
+		return ret_cpp;
 }
 
 bool var::compare(const var& that) const
@@ -1629,20 +1686,21 @@ void var::decodeSub(const std::string& data, unsigned& i, var& value)
 			return;
 		}
 
-		if (data[i] == '_'|| (data[i] >= 'a' && data[i] <= 'z') || (data[i] >= 'A' && data[i] <= 'Z')) /* [_a-zA-Z] */
+		if (data[i] == '$'|| data[i] == '_'|| (data[i] >= 'a' && data[i] <= 'z') || (data[i] >= 'A' && data[i] <= 'Z')) /* [_a-zA-Z] */
 		{
 			var::decodeSymbol(data, i, value.internal_string);
 
 			if (value.internal_string == "null")
 			{
-				value.internal_type = var::null;
 				value.internal_string.clear();
+				value.internal_type = var::null;
 
 				return;
 			}
 
 			if (value.internal_string == "true")
 			{
+				value.internal_string.clear();
 				value.internal_type = var::boolean;
 				value.internal_bool = true;
 
@@ -1651,6 +1709,7 @@ void var::decodeSub(const std::string& data, unsigned& i, var& value)
 
 			if (value.internal_string == "false")
 			{
+				value.internal_string.clear();
 				value.internal_type = var::boolean;
 				value.internal_bool = false;
 
@@ -1673,6 +1732,7 @@ void var::decodeSub(const std::string& data, unsigned& i, var& value)
 		switch (data[i])
 		{
 			case '[':
+			case '(':
 				value.internal_type = var::vector;
 				var::decodeVector(data, i, value.internal_vector);
 				return;
@@ -1705,7 +1765,7 @@ inline void var::decodeNumber(const std::string& data, unsigned& i, double& valu
 		i++;
 	}
 
-	char* strValue = strndup(data.data()+begin, i - begin);
+	char* strValue = strdup(data.substr(begin, i-begin).c_str());
 	value = atof(strValue);
 	free(strValue);
 
@@ -1717,7 +1777,7 @@ inline void var::decodeSymbol(const std::string& data, unsigned& i, std::string&
 	unsigned begin = i;
 	for (unsigned j = 0; i < data.length(); i++, j++)
 	{
-		if ( !(data[i] == '_' || (data[i] >= 'a' && data[i] <= 'z') || (data[i] >= 'A' && data[i] <= 'Z') || (data[i] >= '0' && data[i] <= '9')) ) /* [_a-zA-Z0-9] */ {
+		if ( !(data[i] == '$' || data[i] == '_' || (data[i] >= 'a' && data[i] <= 'z') || (data[i] >= 'A' && data[i] <= 'Z') || (data[i] >= '0' && data[i] <= '9')) ) /* [_a-zA-Z0-9] */ {
 			value  = data.substr(begin, j);
 			i--;
 			return;
@@ -1751,27 +1811,27 @@ inline void var::decodeString(const std::string& data, unsigned& i, std::string&
 			switch (value[j+1])
 			{
 				case '\\':
-					value.replace(j-1, 2, "\\");
+					value.replace(j, 2, "\\");
 					break;
 
 				case '"':
-					value.replace(j-1, 2, "\"");
+					value.replace(j, 2, "\"");
 					break;
 
 				case '/':
-					value.replace(j-1, 2, "/");
+					value.replace(j, 2, "/");
 					break;
 
 				case 'n':
-					value.replace(j-1, 2, "\n");
+					value.replace(j, 2, "\n");
 					break;
 
 				case 'r':
-					value.replace(j-1, 2, "\r");
+					value.replace(j, 2, "\r");
 					break;
 
 				case 't':
-					value.replace(j-1, 2, "\t");
+					value.replace(j, 2, "\t");
 					break;
 			}
 		}
@@ -1786,7 +1846,7 @@ inline void var::decodeVector(const std::string& data, unsigned& i, var::interna
 	{
 		while (data[i] == ',' || data[i] == ' ' || data[i] == '\n' || data[i] == '\r' || data[i] == '\t') i++; /* [,\s]* */
 
-		if (data[i] == ']')
+		if (data[i] == ']' || data[i] == ')')
 		{
 			value.resize(varList.size());
 
@@ -1867,4 +1927,35 @@ var::operator int() const { return operator long(); }
 
 int var::type(const var& that) {
 	return that.internal_type;
+}
+
+int var::exists(const var& haystack, const var& needle)
+{
+	unsigned size = 0;
+	switch (haystack.internal_type)
+	{
+		case var::map:
+
+			for (internal_map_type::const_iterator iterador = haystack.internal_map.begin(); iterador != haystack.internal_map.end(); iterador++)
+			{
+				if((iterador->first).compare(needle)) {
+					return 1;
+				}
+			}
+
+		break;
+
+		case var::vector:
+			size = (int)needle;
+			if (size > 0 && size < haystack.internal_vector.size()) {
+				return 1;
+			}
+
+		break;
+
+		default:
+			return 0;
+	}
+
+	return 0;
 }

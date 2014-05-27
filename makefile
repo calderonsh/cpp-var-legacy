@@ -1,5 +1,5 @@
 
-GPPFLAGS=-Wall -Werror -O2 -pedantic
+GPPFLAGS=-Wall -Werror -pedantic -O2
 
 MAJOR=1
 MINOR=4

@@ -1,5 +1,5 @@
-#ifndef CPP_VAR
-#define CPP_VAR
+#ifndef __CPP_VAR__
+#define __CPP_VAR__
 
 #include <string>
 #include <list>
@@ -9,12 +9,13 @@
 class var
 {
 	public:
-
-		enum var_t {
+		enum var_t
+		{
 			null,
 			boolean,
 			integer,
 			real,
+			symbol,
 			string,
 			map,
 			map_iterator,
@@ -27,6 +28,8 @@ class var
 		typedef std::vector <var> internal_vector_type;
 
 		static int type(const var& that);
+		static int exists(const var& haystack, const var& needle);
+
 
 	private:
 		unsigned	internal_type;
@@ -51,6 +54,7 @@ class var
 		static void decodeString(const std::string& data, unsigned& i, std::string& value);
 		static void decodeVector(const std::string& data, unsigned& i, internal_vector_type& value);
 		static void decodeMap(const std::string& data, unsigned& i, internal_map_type& value);
+
 
 	public:
 		var();
@@ -107,6 +111,9 @@ class var
 		var& operator [](const char*);
 		var& operator <<(int);
 
+		var split(const var& separator);
+		var join(const var& separator);
+
 		bool compare(const var& that) const;
 
 		bool fetch(var& key, var& value);
@@ -118,8 +125,6 @@ class var
 		var end();
 
 		unsigned long size() const;
-
-		friend int var_type(const var&);
 
 		operator bool() const;
 		operator int() const;
@@ -137,5 +142,6 @@ class var
 var operator+(char* a, var b);
 var operator+(const char* a, var b);
 
+typedef var var;
 
-#endif /* CPP_VAR */
+#endif /* __CPP_VAR__ */

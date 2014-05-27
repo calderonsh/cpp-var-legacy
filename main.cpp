@@ -1,46 +1,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <typeinfo>
+#include <map>
 
 #include <var.hpp>
 
-var file_get_contents(const var &filename)
-{
-	const char* filename_c = (const char*)filename;
-
-	char *ret_c;
-
-	FILE *file = fopen(filename_c, "r");
-
-	if (file == NULL) {
-		return false;
-	}
-
-	fseek (file , 0, SEEK_END);
-	size_t size = ftell(file);
-	rewind (file);
-
-	ret_c = (char*)malloc(size + 1);
-
-	size = fread(ret_c, 1, size, file);
-
-	fclose(file);
-
-	ret_c[size] = '\0';
-	var ret = ret_c;
-	free(ret_c);
-
-	return ret;
-}
 
 int main(int argc, char** argv)
 {
-	var beagle;
 
-	beagle.decode("\"Miguel Passos \nCalderon\"");
+	var felipe;
+	felipe.decode("{\"mac\":\"coisa de beesha\",\"debian\":\"coisa de macho\"}");
 
-	printf((const char*) beagle.encode());
+	printf("JSON: %s\n", (const char*)felipe.encode());
+	printf("mac: %s\n", (const char*)felipe["mac"]);
+	printf("debian: %s\n", (const char*)felipe["debian"]);
 
-	return 0;
+	var splitted = var("Luis,Felipe,Beatriz").split(",").join("|");
+
+	felipe["pedrita"] = splitted;
+
+	printf("novo JSON: %s\n", (const char*)felipe.encode());
 }
