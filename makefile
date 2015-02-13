@@ -1,4 +1,4 @@
-
+GPPINCS=
 GPPFLAGS=-Wall -Werror -pedantic -O2
 
 MAJOR=1

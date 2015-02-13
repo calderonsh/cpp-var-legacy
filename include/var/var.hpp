@@ -5,11 +5,11 @@
 #include <map>
 #include <vector>
 
-class var;
-class var
+class Var;
+class Var
 {
 	public:
-		enum var_t
+		enum Var_t
 		{
 			null,
 			boolean,
@@ -24,8 +24,8 @@ class var
 			resource
 		};
 
-		static int type(const var& that);
-		static int exists(const var& haystack, const var& needle);
+		static int type(const Var& that);
+		static int exists(const Var& haystack, const Var& needle);
 
 
 	private:
@@ -37,8 +37,8 @@ class var
 		std::string	internal_string;
 		void*		internal_resource;
 
-		typedef std::map <std::string, var*> internal_map_type;
-		typedef std::vector <var*> internal_vector_type;
+		typedef std::map <std::string, Var*> internal_map_type;
+		typedef std::vector <Var*> internal_vector_type;
 
 		internal_map_type internal_map;
 		internal_map_type::iterator internal_map_iterator;
@@ -46,9 +46,9 @@ class var
 		internal_vector_type internal_vector;
 		internal_vector_type::iterator internal_vector_iterator;
 
-		var num() const;
+		Var num() const;
 
-		static void decodeSub(const std::string& data, unsigned& i, var& value);
+		static void decodeSub(const std::string& data, unsigned& i, Var& value);
 		static void decodeNumber(const std::string& data, unsigned& i, double& value);
 		static void decodeSymbol(const std::string& data, unsigned& i, std::string& value);
 		static void decodeString(const std::string& data, unsigned& i, std::string& value);
@@ -57,61 +57,61 @@ class var
 
 
 	public:
-		var();
-		var(var_t);
-		var(const var&);
+		Var();
+		Var(Var_t);
+		Var(const Var&);
 
-		var(bool);
-		var(int);
-		var(unsigned int);
-		var(long);
-		var(double);
+		Var(bool);
+		Var(int);
+		Var(unsigned int);
+		Var(long);
+		Var(double);
 
-		var(const char*);
-		var(const std::string&);
-		var(void*);
-		~var();
+		Var(const char*);
+		Var(const std::string&);
+		Var(void*);
+		~Var();
 
 		std::string encode() const;
-		var& decode(const var& json);
+		Var& decode(const Var& json);
 
-		var& operator =(const var&);
+		Var& operator =(const Var&);
 
-		var operator +(const var&) const;
-		var operator -(const var&) const;
-		var operator *(const var&) const;
-		var operator /(const var&) const;
+		Var operator +(const Var&) const;
+		Var operator -(const Var&) const;
+		Var operator *(const Var&) const;
+		Var operator /(const Var&) const;
 
-		var& operator ++(int);
-		var& operator --(int);
+		Var& operator ++(int);
+		Var& operator --(int);
 
-		bool operator ==(const var&) const;
-		bool operator !=(const var&) const;
+		bool operator ==(const Var&) const;
+		bool operator !=(const Var&) const;
 
-		bool operator <(const var&) const;
-		bool operator >(const var&) const;
-		bool operator &&(const var&) const;
-		bool operator ||(const var&) const;
+		bool operator <(const Var&) const;
+		bool operator >(const Var&) const;
+		bool operator &&(const Var&) const;
+		bool operator ||(const Var&) const;
 
-		long operator &(const var&);
-		long operator |(const var&);
+		long operator &(const Var&);
+		long operator |(const Var&);
 
-		var& operator [](const var&);
+		Var& operator [](const Var&);
 
-		var& operator <<(const var&);
+		Var& operator <<(const Var&);
 
-		var split(const var& separator);
-		var join(const var& separator);
+		Var split(const Var& separator);
+		Var join(const Var& separator);
 
 		std::string toString() const;
 
-		bool compare(const var& that) const;
+		bool compare(const Var& that) const;
 
-		var key();
-		var& operator *();
+		Var key();
+		Var& operator *();
 
-		var begin();
-		var end();
+		Var begin();
+		Var end();
 
 		unsigned long size() const;
 		void clear();
@@ -123,8 +123,8 @@ class var
 		operator void *() const;
 
 
-		var operator +(int) const;
-		var operator +(const char*) const;
+		Var operator +(int) const;
+		Var operator +(const char*) const;
 		bool operator ==(bool) const;
 		bool operator ==(int) const;
 		bool operator ==(float) const;
@@ -133,19 +133,19 @@ class var
 		bool operator !=(int) const;
 		bool operator !=(const char*) const;
 		bool operator <(unsigned int) const;
-		var& operator [](int);
-		var& operator [](const char*);
-		var& operator <<(int);
+		Var& operator [](int);
+		Var& operator [](const char*);
+		Var& operator <<(int);
 
 };
 
-inline var operator+(char* a, const var& b) {
-	return var((char*)a) + b;
+inline Var operator+(char* a, const Var& b) {
+	return Var((char*)a) + b;
 }
-inline var operator+(const char* a, const var& b) {
-	return var(a) + b;
+inline Var operator+(const char* a, const Var& b) {
+	return Var(a) + b;
 }
 
-typedef var var;
+typedef Var var;
 
 #endif /* __CPP_VAR__ */
