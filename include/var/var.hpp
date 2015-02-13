@@ -4,9 +4,8 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <list>
 
-
+class var;
 class var
 {
 	public:
@@ -25,9 +24,6 @@ class var
 			resource
 		};
 
-		typedef std::map <var, var> internal_map_type;
-		typedef std::vector <var> internal_vector_type;
-
 		static int type(const var& that);
 		static int exists(const var& haystack, const var& needle);
 
@@ -40,6 +36,9 @@ class var
 		double		internal_double;
 		std::string	internal_string;
 		void*		internal_resource;
+
+		typedef std::map <std::string, var*> internal_map_type;
+		typedef std::vector <var*> internal_vector_type;
 
 		internal_map_type internal_map;
 		internal_map_type::iterator internal_map_iterator;
@@ -60,6 +59,7 @@ class var
 	public:
 		var();
 		var(var_t);
+		var(const var&);
 
 		var(bool);
 		var(int);
@@ -70,18 +70,20 @@ class var
 		var(const char*);
 		var(const std::string&);
 		var(void*);
+		~var();
 
-		void clear();
+		std::string encode() const;
+		var& decode(const var& json);
 
-		var operator =(const var&);
+		var& operator =(const var&);
 
 		var operator +(const var&) const;
 		var operator -(const var&) const;
 		var operator *(const var&) const;
 		var operator /(const var&) const;
 
-		var operator ++(int);
-		var operator --(int);
+		var& operator ++(int);
+		var& operator --(int);
 
 		bool operator ==(const var&) const;
 		bool operator !=(const var&) const;
@@ -98,6 +100,29 @@ class var
 
 		var& operator <<(const var&);
 
+		var split(const var& separator);
+		var join(const var& separator);
+
+		std::string toString() const;
+
+		bool compare(const var& that) const;
+
+		var key();
+		var& operator *();
+
+		var begin();
+		var end();
+
+		unsigned long size() const;
+		void clear();
+
+		operator bool() const;
+		operator long() const;
+		operator double() const;
+		inline operator const char*() const { return this->toString().c_str(); }
+		operator void *() const;
+
+
 		var operator +(int) const;
 		var operator +(const char*) const;
 		bool operator ==(bool) const;
@@ -112,34 +137,14 @@ class var
 		var& operator [](const char*);
 		var& operator <<(int);
 
-		var split(const var& separator);
-		var join(const var& separator);
-
-		bool compare(const var& that) const;
-
-		bool fetch(var& key, var& value);
-
-		var key();
-		var& operator *();
-
-		var begin();
-		var end();
-
-		unsigned long size() const;
-
-		operator bool() const;
-		operator int() const;
-		operator long() const;
-		operator double() const;
-		operator const char*() const;
-		operator void *() const;
-
-		var encode() const;
-		var& decode(const var& json);
 };
 
-var operator+(char* a, var b);
-var operator+(const char* a, var b);
+inline var operator+(char* a, const var& b) {
+	return var((char*)a) + b;
+}
+inline var operator+(const char* a, const var& b) {
+	return var(a) + b;
+}
 
 typedef var var;
 

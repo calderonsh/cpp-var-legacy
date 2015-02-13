@@ -8,17 +8,9 @@
 
 int main(int argc, char** argv)
 {
+	var a = true;
+	var b = "4";
+	var c = a + b;
 
-	var json;
-	json.decode("{\"mac\":\"coisa de beesha\",\"debian\":\"coisa de macho\"}");
-
-	printf("JSON: %s\n", (const char*)json.encode());
-	printf("mac: %s\n", (const char*)json["mac"]);
-	printf("debian: %s\n", (const char*)json["debian"]);
-
-	var splitted = var("Luis,Felipe,Beatriz").split(",").join("|");
-
-	json["pedrita"] = splitted;
-
-	printf("novo JSON: %s\n", (const char*)json.encode());
+	printf("%s\n%d\n", c.encode().c_str(),var::type(c));
 }

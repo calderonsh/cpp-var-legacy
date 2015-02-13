@@ -3,11 +3,24 @@
 #include <string.h>
 #include <math.h>
 
+#include <iostream>
+#include <list>
+
 #include "var.hpp"
 
 
 var::var() {
-	internal_type = var::null;
+	this->internal_type = var::null;
+}
+
+var::var(var_t that)
+{
+	this->internal_type = that;
+}
+
+var::var(const var& that)
+{
+	*this = that;
 }
 
 var::var(bool that)
@@ -20,11 +33,6 @@ var::var(int that)
 {
 	this->internal_long = that;
 	this->internal_type = var::integer;
-}
-
-var::var(var_t that)
-{
-	this->internal_type = that;
 }
 
 var::var(unsigned int that)
@@ -60,7 +68,12 @@ var::var(const std::string& that)
 var::var(void* that)
 {
 	this->internal_resource = that;
-	this->internal_type = var::string;
+	this->internal_type = var::resource;
+}
+
+var::~var()
+{
+	this->clear();
 }
 
 void var::clear()
@@ -84,10 +97,16 @@ void var::clear()
 			break;
 
 		case var::map:
+			for (internal_map_type::iterator i = this->internal_map.begin(); i != this->internal_map.end(); i++) {
+				delete i->second;
+			}
 			this->internal_map.clear();
 			break;
 
 		case var::vector:
+			for (size_t i = 0; i < this->internal_vector.size(); i++) {
+				delete this->internal_vector[i];
+			}
 			this->internal_vector.clear();
 			break;
 
@@ -103,7 +122,7 @@ void var::clear()
 	this->internal_type = var::null;
 }
 
-var var::operator =(const var& that)
+var& var::operator =(const var& that)
 {
 	this->clear();
 
@@ -134,7 +153,11 @@ var var::operator =(const var& that)
 			break;
 
 		case var::map:
-			this->internal_map = that.internal_map;
+			for (internal_map_type::const_iterator i = that.internal_map.begin(); i != that.internal_map.end(); i++)
+			{
+				var &container = *(this->internal_map[i->first] = new var());
+				container = *(i->second);
+			}
 			this->internal_type = var::map;
 
 			break;
@@ -146,7 +169,12 @@ var var::operator =(const var& that)
 			break;
 
 		case var::vector:
-			this->internal_vector = that.internal_vector;
+			this->internal_vector.resize(that.internal_vector.size());
+			for (size_t i = 0; i < that.internal_vector.size(); i++)
+			{
+				var* container = new var(*(that.internal_vector[i]));
+				this->internal_vector[i] = container;
+			}
 			this->internal_type = var::vector;
 
 			break;
@@ -164,58 +192,41 @@ var var::operator =(const var& that)
 			break;
 
 		case var::null:
-			this->internal_type=var::null;
+			this->internal_type = var::null;
 	}
 
-	return that;
+	return *this;
 }
 
 var var::operator +(const var& that) const
 {
-	var result = *this;
+	var result;
 
-	switch(result.internal_type)
+	switch(this->internal_type)
 	{
 		case var::boolean:
 			switch(that.internal_type)
 			{
 				case var::boolean:
-					result.internal_bool = internal_bool || that.internal_bool;
+					result.internal_bool = this->internal_bool || that.internal_bool;
 					result.internal_type = var::boolean;
 
 					return result;
 
 				case var::integer:
-					result.internal_bool = internal_bool || that.internal_long;
-					result.internal_type = var::boolean;
+					result.internal_long = (this->internal_bool?1:0) + that.internal_long;
+					result.internal_type = var::integer;
 
 					return result;
 
 				case var::real:
-					result.internal_bool = internal_bool || that.internal_double;
-					result.internal_type = var::boolean;
+					result.internal_double = (this->internal_bool?1.0:0.0) + that.internal_double;
+					result.internal_type = var::real;
 
 					return result;
-			}
-			break;
 
-		case var::string:
-			switch(that.internal_type)
-			{
 				case var::string:
-					result.internal_string += that.internal_string;
-					result.internal_type = var::string;
-
-					return result;
-
-				case var::integer:
-					result.internal_string += (const char*)that;
-					result.internal_type = var::string;
-
-					return result;
-
-				case var::real:
-					result.internal_string += (const char*)that;
+					result.internal_string = (this->internal_bool?"true":"false") + that.internal_string;
 					result.internal_type = var::string;
 
 					return result;
@@ -225,19 +236,28 @@ var var::operator +(const var& that) const
 		case var::integer:
 			switch(that.internal_type)
 			{
-				case var::string:
 
-					return result + that.num();
+				case var::boolean:
+					result.internal_long = this->internal_long + (that.internal_bool?1:0);
+					result.internal_type = var::integer;
+
+					return result;
 
 				case var::integer:
-					result.internal_long += that.internal_long;
+					result.internal_long = this->internal_long + that.internal_long;
 					result.internal_type = var::integer;
 
 					return result;
 
 				case var::real:
-					result.internal_double = result.internal_long + that.internal_double;
+					result.internal_double = this->internal_long + that.internal_double;
 					result.internal_type = var::real;
+
+					return result;
+
+				case var::string:
+					result.internal_string = this->toString() + that.internal_string;
+					result.internal_type = var::string;
 
 					return result;
 			}
@@ -246,19 +266,56 @@ var var::operator +(const var& that) const
 		case var::real:
 			switch(that.internal_type)
 			{
-				case var::string:
+				case var::boolean:
+					result.internal_double = this->internal_double + (that.internal_bool?1.0:0.0);
+					result.internal_type = var::real;
 
-					return result + that.num();
+					return result;
 
 				case var::integer:
-					result.internal_double += that.internal_long;
+					result.internal_double = this->internal_double + that.internal_long;
 					result.internal_type = var::real;
 
 					return result;
 
 				case var::real:
-					result.internal_double += that.internal_double;
+					result.internal_double = this->internal_double + that.internal_double;
 					result.internal_type = var::real;
+
+					return result;
+
+				case var::string:
+					result.internal_string = this->toString() + that.internal_string;
+					result.internal_type = var::string;
+
+					return result;
+			}
+			break;
+
+		case var::string:
+			switch(that.internal_type)
+			{
+				case var::boolean:
+					result.internal_string = this->internal_string + (that.internal_bool?"true":"false");
+					result.internal_type = var::string;
+
+					return result;
+
+				case var::integer:
+					result.internal_string = this->internal_string + that.toString();
+					result.internal_type = var::string;
+
+					return result;
+
+				case var::real:
+					result.internal_string = this->internal_string + that.toString();
+					result.internal_type = var::string;
+
+					return result;
+
+				case var::string:
+					result.internal_string = this->internal_string + that.internal_string;
+					result.internal_type = var::string;
 
 					return result;
 			}
@@ -277,12 +334,14 @@ var var::operator -(const var& that) const
 		case var::integer:
 			switch(that.internal_type)
 			{
-				case var::string:
+				case var::boolean:
+					result.internal_long = result.internal_long - (that.internal_bool?1:0);
+					result.internal_type = var::integer;
 
-					return result - that.num();
+					return result;
 
 				case var::integer:
-					result.internal_long -= that.internal_long;
+					result.internal_long = result.internal_long - that.internal_long;
 					result.internal_type = var::integer;
 
 					return result;
@@ -292,27 +351,35 @@ var var::operator -(const var& that) const
 					result.internal_type = var::real;
 
 					return result;
+
+				case var::string:
+					return result - that.num();
 			}
 			break;
 
 		case var::real:
 			switch(that.internal_type)
 			{
-				case var::string:
+				case var::boolean:
+					result.internal_double = result.internal_double - (that.internal_bool?1.0:0.0);
+					result.internal_type = var::integer;
 
-					return result - that.num();
+					return result;
 
 				case var::integer:
-					result.internal_double -= that.internal_long;
+					result.internal_double = result.internal_double - that.internal_long;
 					result.internal_type = var::real;
 
 					return result;
 
 				case var::real:
-					result.internal_double -= that.internal_double;
+					result.internal_double = result.internal_double - that.internal_double;
 					result.internal_type = var::real;
 
 					return result;
+
+				case var::string:
+					return result - that.num();
 			}
 			break;
 	}
@@ -322,42 +389,21 @@ var var::operator -(const var& that) const
 
 var var::operator *(const var& that) const
 {
-	var result = *this;
+	var result = this->num();
 
 	switch(result.internal_type)
 	{
-		case var::boolean:
-			switch(that.internal_type)
-			{
-				case var::boolean:
-					result.internal_bool = internal_bool && that.internal_bool;
-					result.internal_type = var::boolean;
-
-					return result;
-
-				case var::integer:
-					result.internal_bool = internal_bool && that.internal_long;
-					result.internal_type = var::boolean;
-
-					return result;
-
-				case var::real:
-					result.internal_bool = internal_bool && that.internal_double;
-					result.internal_type = var::boolean;
-
-					return result;
-			}
-			break;
-
 		case var::integer:
 			switch(that.internal_type)
 			{
-				case var::string:
+				case var::boolean:
+					result.internal_long = result.internal_long * (that.internal_bool?1:0);
+					result.internal_type = var::integer;
 
-					return result * that.num();
+					return result;
 
 				case var::integer:
-					result.internal_long *= that.internal_long;
+					result.internal_long = result.internal_long * that.internal_long;
 					result.internal_type = var::integer;
 
 					return result;
@@ -367,27 +413,35 @@ var var::operator *(const var& that) const
 					result.internal_type = var::real;
 
 					return result;
+
+				case var::string:
+					return result * that.num();
 			}
 			break;
 
 		case var::real:
 			switch(that.internal_type)
 			{
-				case var::string:
+				case var::boolean:
+					result.internal_double = result.internal_double * (that.internal_bool?1.0:0.0);
+					result.internal_type = var::integer;
 
-					return result * that.num();
+					return result;
 
 				case var::integer:
-					result.internal_double *= that.internal_long;
+					result.internal_double = result.internal_double * that.internal_long;
 					result.internal_type = var::real;
 
 					return result;
 
 				case var::real:
-					result.internal_double *= that.internal_double;
+					result.internal_double = result.internal_double * that.internal_double;
 					result.internal_type = var::real;
 
 					return result;
+
+				case var::string:
+					return result * that.num();
 			}
 			break;
 	}
@@ -404,14 +458,15 @@ var var::operator /(const var& that) const
 		case var::integer:
 			switch(that.internal_type)
 			{
-				case var::string:
+				case var::boolean:
+					result.internal_long = result.internal_long / (that.internal_bool?1:0);
+					result.internal_type = var::integer;
 
-					return result / that.num();
+					return result;
 
 				case var::integer:
-					result.internal_double = (double)result.internal_long / that.internal_long;
-					result.internal_long = (long)result.internal_double;
-					result.internal_type = result.internal_double == result.internal_long ? var::integer : var::real;
+					result.internal_long = result.internal_long / that.internal_long;
+					result.internal_type = var::integer;
 
 					return result;
 
@@ -420,27 +475,35 @@ var var::operator /(const var& that) const
 					result.internal_type = var::real;
 
 					return result;
+
+				case var::string:
+					return result / that.num();
 			}
 			break;
 
 		case var::real:
 			switch(that.internal_type)
 			{
-				case var::string:
+				case var::boolean:
+					result.internal_double = result.internal_double / (that.internal_bool?1.0:0.0);
+					result.internal_type = var::integer;
 
-					return result / that.num();
+					return result;
 
 				case var::integer:
-					result.internal_double /= that.internal_long;
+					result.internal_double = result.internal_double / that.internal_long;
 					result.internal_type = var::real;
 
 					return result;
 
 				case var::real:
-					result.internal_double /= that.internal_double;
+					result.internal_double = result.internal_double / that.internal_double;
 					result.internal_type = var::real;
 
 					return result;
+
+				case var::string:
+					return result / that.num();
 			}
 			break;
 	}
@@ -448,7 +511,7 @@ var var::operator /(const var& that) const
 	return result;
 }
 
-var var::operator ++(int)
+var& var::operator ++(int)
 {
 	switch(this->internal_type)
 	{
@@ -473,7 +536,7 @@ var var::operator ++(int)
 	return *this;
 }
 
-var var::operator --(int)
+var& var::operator --(int)
 {
 	switch(internal_type)
 	{
@@ -1152,18 +1215,24 @@ var& var::operator [](const var& that)
 				i += this->internal_vector.size() * (ceil(fabs(i)/(float)this->internal_vector.size()));
 			}
 
-			if (this->internal_vector.size() < (unsigned int)i) {
+			if (this->internal_vector.size() < (unsigned long)i)
+			{
+				unsigned long oldSize = this->internal_vector.size() -1;
 				this->internal_vector.resize(i + 1);
+
+				for (unsigned long j = oldSize; j < this->internal_vector.size(); j++) {
+					this->internal_vector[j] = new var();
+				}
 			}
 
-			return (var&)this->internal_vector[i];
+			return (var&)(*(this->internal_vector[i]));
 		}
 		else
 		{
 			for (unsigned i = 0; i < this->internal_vector.size(); i++)
 			{
-				this->internal_map[i] = this->internal_vector[i];
-				this->internal_vector[i].clear();
+				this->internal_map[var(i).toString()] = this->internal_vector[i];
+				this->internal_vector[i]->clear();
 			}
 
 			this->internal_vector.clear();
@@ -1172,11 +1241,16 @@ var& var::operator [](const var& that)
 		}
 	}
 
-	return (var&)(this->internal_map[that]);
+	if (this->internal_map[that.toString()] == NULL) {
+		this->internal_map[that.toString()] = new var();
+	}
+
+	return (var&)(*(this->internal_map[that.toString()]));
 }
 
 var& var::operator <<(const var& that)
 {
+	var* container = new var(that);
 	if(this->internal_type != var::vector && this->internal_type != var::map)
 	{
 		this->clear();
@@ -1185,7 +1259,7 @@ var& var::operator <<(const var& that)
 
 	if(this->internal_type == var::vector)
 	{
-		this->internal_vector.push_back(that);
+		this->internal_vector.push_back(container);
 		return *this;
 	}
 
@@ -1193,26 +1267,22 @@ var& var::operator <<(const var& that)
 
 	for (this->internal_map_iterator = this->internal_map.begin(); this->internal_map_iterator != this->internal_map.end(); this->internal_map_iterator++)
 	{
-		if (this->internal_map_iterator->first.num().compare(last) ) {
-			last = (last > this->internal_map_iterator->first.num() ? last : this->internal_map_iterator->first.num() ) + 1;
+		if (var(this->internal_map_iterator->first).num().compare(last) ) {
+			last = (last > var(this->internal_map_iterator->first).num() ? last : var(this->internal_map_iterator->first).num() ) + 1;
 		}
 	}
 
-	this->internal_map[var(last)] = that;
+	this->internal_map[last.toString()] = container;
 
 	return *this;
 }
 
 var var::split(const var& separator)
 {
-	std::string delimiter_cpp = (const char*)separator;
-	std::string string_cpp = (const char*)(*this);
+	std::string delimiter_cpp = separator.toString();
+	std::string string_cpp = this->toString();
 	var ret_var;
-	unsigned previous = 0, next = 0;
-
-	if (delimiter_cpp.length() == 0) {
-		return false;
-	}
+	size_t previous = 0, next = 0;
 
 	while ( (next = string_cpp.find(delimiter_cpp, previous + delimiter_cpp.length()-1)) != std::string::npos)
 	{
@@ -1228,7 +1298,7 @@ var var::split(const var& separator)
 var var::join(const var& separator)
 {
 		unsigned length = 0;
-		std::string glue_cpp = (const char*)separator;
+		std::string glue_cpp = separator.toString();
 		std::string ret_cpp;
 		var it;
 
@@ -1244,7 +1314,7 @@ var var::join(const var& separator)
 		while (true)
 		{
 			if (var::type(*it) != var::map && var::type(*it) != var::vector) {
-				ret_cpp += (const char*)(*it);
+				ret_cpp += (*it).toString();
 			} else {
 				continue;
 			}
@@ -1261,6 +1331,44 @@ var var::join(const var& separator)
 		return ret_cpp;
 }
 
+std::string var::toString() const
+{
+	std::string result;
+	char* buffer = NULL;
+
+	switch(this->internal_type)
+	{
+		case var::null:
+			return "";
+
+		case var::boolean:
+			return this->internal_bool ? "true" : "false";
+
+		case var::string:
+			return this->internal_string.c_str();
+
+		case var::integer:
+			buffer = (char*)malloc(32);
+			sprintf(buffer,"%ld", this->internal_long);
+			break;
+
+		case var::real:
+			buffer = (char*)malloc(32);
+			sprintf(buffer,"%f", this->internal_double);
+			break;
+
+		default:
+			buffer = (char*)malloc(32);
+			sprintf(buffer,"0");
+			break;
+	}
+
+	result = buffer;
+	free(buffer);
+
+	return result;
+}
+
 bool var::compare(const var& that) const
 {
 	if (this->internal_type != that.internal_type) {
@@ -1268,57 +1376,6 @@ bool var::compare(const var& that) const
 	}
 
 	return (*this == that);
-}
-
-bool var::fetch(var& key, var& value)
-{
-	switch(this->internal_type)
-	{
-		case var::map:
-			if (this->internal_map_iterator == this->internal_map.end())
-			{
-				this->internal_map_iterator = this->internal_map.begin();
-				key = this->internal_map_iterator->first;
-				value = this->internal_map_iterator->second;
-
-				return true;
-			}
-			else
-			{
-				this->internal_map_iterator++;
-
-				if (this->internal_map_iterator == this->internal_map.end()) {
-					return false;
-				}
-
-				key = this->internal_map_iterator->first;
-				value = this->internal_map_iterator->second;
-			}
-			return true;
-
-		case var::vector:
-			if ( (unsigned) this->internal_long >= this->internal_vector.size())
-			{
-				this->internal_long = 0;
-				key = this->internal_long;
-				value = this->internal_vector[this->internal_long];
-
-				return true;
-			}
-			else
-			{
-				this->internal_long++;
-
-				if ( (unsigned) this->internal_long >= this->internal_vector.size()) {
-					return false;
-				}
-				key = this->internal_long;
-				value = this->internal_vector[this->internal_long];
-			}
-			return true;
-	}
-
-	return false;
 }
 
 var var::key()
@@ -1340,10 +1397,10 @@ var& var::operator *()
 	switch(this->internal_type)
 	{
 		case var::map_iterator:
-			return (var&) this->internal_map_iterator->second;
+			return (var&) *this->internal_map_iterator->second;
 
 		case var::vector_iterator:
-			return (var&) *this->internal_vector_iterator;
+			return (var&) **this->internal_vector_iterator;
 	}
 
 	return (var&) *this;
@@ -1507,43 +1564,6 @@ var::operator double() const
 	return 0;
 }
 
-var::operator const char*() const
-{
-	std::string result;
-	char* buffer;
-
-	switch(this->internal_type)
-	{
-		case var::null:
-			return "";
-
-		case var::boolean:
-			return this->internal_bool ? "true" : "false";
-
-		case var::string:
-			return this->internal_string.c_str();
-
-		case var::integer:
-			buffer = (char*) malloc(32);
-			sprintf(buffer,"%ld", this->internal_long);
-			break;
-
-		case var::real:
-			buffer = (char*) malloc(32);
-			sprintf(buffer,"%f", this->internal_double);
-			break;
-
-		default:
-			buffer = (char*) malloc(32);
-			sprintf(buffer,"0");
-	}
-
-	result = buffer;
-	free(buffer);
-
-	return result.c_str();
-}
-
 var::operator void *() const
 {
 	if (this->internal_type == var::resource) {
@@ -1553,7 +1573,7 @@ var::operator void *() const
 	}
 }
 
-var var::encode() const
+std::string var::encode() const
 {
 	std::string result;
 	unsigned int pos = 0;
@@ -1563,7 +1583,7 @@ var var::encode() const
 		case var::boolean:
 		case var::integer:
 		case var::real:
-			return (const char*) *this;
+			return this->toString();
 
 		case var::string:
 			result = this->internal_string;
@@ -1582,6 +1602,14 @@ var var::encode() const
 
 					case '/':
 						result.replace(pos++, 1, "\\/");
+						break;
+
+					case '\b':
+						result.replace(pos++, 1, "\\b");
+						break;
+
+					case '\f':
+						result.replace(pos++, 1, "\\f");
 						break;
 
 					case '\n':
@@ -1606,7 +1634,7 @@ var var::encode() const
 				result = "{";
 
 				for(internal_map_type::const_iterator it = this->internal_map.begin(); it != this->internal_map.end(); it++) {
-					result += (const char*)((it)->first.encode() + ":" + (it)->second.encode() + ",");
+					result = result + var(it->first).encode() + ":" + (it->second->encode()) + ",";
 				}
 
 				result[result.size()-1] = '}';
@@ -1623,7 +1651,7 @@ var var::encode() const
 				result = "[";
 
 				for(unsigned i = 0; i < this->internal_vector.size(); i++) {
-					result += (const char*)(this->internal_vector[i].encode() + ",");
+					result += (this->internal_vector[i]->encode() + ",");
 				}
 
 				result[result.size()-1] = ']';
@@ -1636,7 +1664,6 @@ var var::encode() const
 		case var::resource:
 			return "\"(resource)\"";
 
-		/* var::null, var::map_iterator, var::vector_iterator */
 		default:
 			return "null";
 	}
@@ -1668,7 +1695,7 @@ void var::decodeSub(const std::string& data, unsigned& i, var& value)
 			return;
 		}
 
-		if (data[i] == '$'|| data[i] == '_'|| (data[i] >= 'a' && data[i] <= 'z') || (data[i] >= 'A' && data[i] <= 'Z')) /* [_a-zA-Z] */
+		if ((data[i] >= 'a' && data[i] <= 'z') || (data[i] >= 'A' && data[i] <= 'Z') || data[i] == '$'|| data[i] == '_') /* [_a-zA-Z] */
 		{
 			var::decodeSymbol(data, i, value.internal_string);
 
@@ -1804,6 +1831,14 @@ inline void var::decodeString(const std::string& data, unsigned& i, std::string&
 					value.replace(j, 2, "/");
 					break;
 
+				case 'b':
+					value.replace(j, 2, "\b");
+					break;
+
+				case 'f':
+					value.replace(j, 2, "\f");
+					break;
+
 				case 'n':
 					value.replace(j, 2, "\n");
 					break;
@@ -1835,7 +1870,7 @@ inline void var::decodeVector(const std::string& data, unsigned& i, var::interna
 			unsigned j = 0;
 			for (std::list<var>::iterator it = varList.begin(); it != varList.end(); it++)
 			{
-				value[j] = *it;
+				value[j] = new var(*it);
 				j++;
 			}
 
@@ -1851,7 +1886,7 @@ inline void var::decodeMap(const std::string& data, unsigned& i, var::internal_m
 {
 	i++;
 	var mapKey;
-	var mapValue;
+	var* mapValue = NULL;
 	while (data[i] == ' ') i++;
 
 	for (; i < data.length(); i++)
@@ -1867,10 +1902,11 @@ inline void var::decodeMap(const std::string& data, unsigned& i, var::internal_m
 			i++;
 		} while (data[i] == ':' || data[i] == ' ' || data[i] == '\n' || data[i] == '\r' || data[i] == '\t'); /* [:\s]* */
 
-		mapValue.clear();
-		decodeSub(data, i, mapValue);
 
-		value[mapKey] = mapValue;
+		mapValue = new var();
+		decodeSub(data, i, *mapValue);
+
+		value[mapKey.toString()] = mapValue;
 	}
 }
 
@@ -1899,12 +1935,9 @@ bool var:: operator !=(int a) const { return operator !=(var(a)); }
 bool var:: operator !=(const char* a) const { return operator !=(var(a)); }
 bool var:: operator <(unsigned int a) const { return operator <(var(a));}
 var& var:: operator [](int a) { return operator[](var(a)); }
-var& var:: operator [](const char* a) { return operator[](var(a)); }
+var& var:: operator [](const char* a) { return operator[](std::string(a)); }
 var& var:: operator <<(int a) { return operator<<(var(a)); }
 
-var operator+(char* a, var b) {return var(a) + b;}
-var operator+(const char* a, var b) {return var(a) + b;}
-var::operator int() const { return operator long(); }
 
 int var::type(const var& that) {
 	return that.internal_type;
@@ -1919,7 +1952,7 @@ int var::exists(const var& haystack, const var& needle)
 
 			for (internal_map_type::const_iterator iterador = haystack.internal_map.begin(); iterador != haystack.internal_map.end(); iterador++)
 			{
-				if((iterador->first).compare(needle)) {
+				if((iterador->first).compare(needle.toString())) {
 					return 1;
 				}
 			}
