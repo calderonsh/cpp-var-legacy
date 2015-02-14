@@ -8,9 +8,8 @@
 
 int main(int argc, char** argv)
 {
-	var a = true;
-	var b = "4";
-	var c = a + b;
+	var str = "Hello World!     ";
+	var n = str.trim();
 
-	printf("%s\n%d\n", c.encode().c_str(),var::type(c));
+	printf("%s\n", n.encode().c_str());
 }

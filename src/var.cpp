@@ -1277,7 +1277,336 @@ Var& Var::operator <<(const Var& that)
 	return *this;
 }
 
-Var Var::split(const Var& separator)
+Var Var::charAt(const Var& index) const
+{
+	var result;
+
+	if (this->internal_type == Var::string) {
+		result = this->internal_string.substr((long)index, 1);
+	}
+
+	return result;
+}
+
+Var Var::charCodeAt(const Var& index) const
+{
+	var result;
+
+	if (this->internal_type == Var::string) {
+		return this->toString()[(long)index];
+	}
+
+	return result;
+}
+
+Var Var::concat(const var& that) const
+{
+	var result;
+
+	if (this->internal_type == that.internal_type)
+	{
+		if (this->internal_type == Var::string) {
+			result = *this + that;
+		} else
+		if (this->internal_type == Var::vector)
+		{
+			result = *this;
+
+			for (unsigned long i = 0; i < that.internal_vector.size(); i++) {
+				result << *(that.internal_vector[i]);
+			}
+		}
+	}
+
+	return result;
+}
+
+Var Var::fromCharCode(const var& that)
+{
+	char code = (long)that;
+
+	std::string result;
+	result.resize(1);
+	result[0] = code;
+
+	return result;
+}
+
+Var Var::indexOf(const Var& searchvalue, const Var& start) const
+{
+	var result;
+
+	if (this->internal_type == Var::string) {
+		result = (long)(this->internal_string.find(searchvalue.toString(), (long)start));
+	}
+
+	return result;
+}
+
+Var Var::lastIndexOf(const Var& searchvalue) const
+{
+	var result;
+
+	if (this->internal_type == Var::string) {
+		result = (long)(this->internal_string.rfind(searchvalue.toString()));
+	}
+
+	return result;
+}
+
+Var Var::lastIndexOf(const Var& searchvalue, const Var& start) const
+{
+	var result;
+
+	if (this->internal_type == Var::string) {
+		result = (long)(this->internal_string.rfind(searchvalue.toString(), this->internal_string.size() - (long)start));
+	}
+
+	return result;
+}
+
+Var Var::localeCompare(const Var& compareString) const
+{
+	var result;
+
+	if (this->internal_type == Var::string)
+	{
+		long compareResult =  (long)this->internal_string.compare(compareString.toString());
+
+		compareResult = compareResult > 0 ? 1 : compareResult;
+		compareResult = compareResult < 0 ? -1 : compareResult;
+
+		result = compareResult;
+	}
+
+	return result;
+}
+
+Var Var::replace(const Var& searchvalue, const var& newvalue) const
+{
+	var result;
+
+	if (this->internal_type == Var::string)
+	{
+		const char* search_c  = searchvalue;
+		const char* replace_c = newvalue;
+		const char* subject_c = *this;
+
+		int i, count = 0;
+		int replacelen = strlen(replace_c);
+		int searchlen = strlen(search_c);
+
+		for (i = 0; subject_c[i]; ++i)
+		{
+			if (strstr(&subject_c[i], search_c) == &subject_c[i]) {
+				++count, i += searchlen - 1;
+			}
+		}
+
+		char *ret_c = (char *) calloc(i + 1 + count * (replacelen - searchlen), sizeof(char));
+
+		if (!ret_c) return 0;
+
+		i = 0;
+
+		while (*subject_c)
+		{
+			if (strstr(subject_c, search_c) == subject_c) {
+				strcpy(&ret_c[i], replace_c), i += replacelen,	subject_c += searchlen;
+			} else {
+				ret_c[i++] = *subject_c++;
+			}
+		}
+
+		ret_c[i] = '\0';
+		var ret = ret_c;
+		free(ret_c);
+
+		result = ret;
+	}
+
+	return result;
+}
+
+Var Var::slice(const Var& start) const
+{
+	return this->slice(start, (long)this->internal_string.size());
+}
+
+Var Var::slice(const Var& start, const Var& stop) const
+{
+	var result;
+
+	if (this->internal_type == Var::string)
+	{
+		long begin = start;
+		long end = stop;
+
+		begin = begin < 0 ? begin + this->internal_string.size(): begin;
+		begin = begin < 0 ? 0 : begin;
+		begin = begin > this->internal_string.size()? this->internal_string.size() : begin;
+
+		end = end < 0 ? end + this->internal_string.size() : end;
+		end = end < 0 ? 0 : end;
+		end = end > this->internal_string.size()? this->internal_string.size() : end;
+
+		result = this->internal_string.substr(begin, end - begin);
+	}
+
+	return result;
+}
+
+Var Var::substr(const Var& start) const
+{
+	return this->substring(start, (long)this->internal_string.size());
+}
+
+Var Var::substr(const Var& start, const Var& length) const
+{
+	var result;
+
+	if (this->internal_type == Var::string)
+	{
+		long begin = start;
+		long size = length;
+
+		begin = begin < 0 ? begin + this->internal_string.size(): begin;
+		begin = begin < 0 ? 0 : begin;
+		begin = begin > this->internal_string.size()? this->internal_string.size() : begin;
+
+		result = this->internal_string.substr(begin, size);
+	}
+
+	return result;
+}
+
+Var Var::substring(const Var& start) const
+{
+	return this->substring(start, (long)this->internal_string.size());
+}
+
+Var Var::substring(const Var& start, const Var& stop) const
+{
+	var result;
+
+	if (this->internal_type == Var::string)
+	{
+		long begin = start;
+		long end = stop;
+
+		begin = begin < 0 ? 0 : begin;
+		begin = begin > this->internal_string.size()? this->internal_string.size() : begin;
+
+		end = end < 0 ? 0 : end;
+		end = end > this->internal_string.size()? this->internal_string.size() : end;
+
+		if (begin > end)
+		{
+			begin = begin + end;
+			end = begin - end;
+			begin = begin - end;
+		}
+
+		result = this->internal_string.substr(begin, end - begin);
+	}
+
+	return result;
+}
+
+Var Var::toLocaleLowerCase() const
+{
+	return this->toLowerCase();
+}
+
+Var Var::toLocaleUpperCase() const
+{
+	return this->toUpperCase();
+}
+
+Var Var::toLowerCase() const
+{
+	var result;
+
+	if (this->internal_type == Var::string)
+	{
+		result = this->internal_string;
+
+		int length = result.internal_string.length();
+
+		for (int i = 0; i < length; i++)
+		{
+			if (65 <= result.internal_string[i] && result.internal_string[i] <= 90) {
+				result.internal_string[i] += 32;
+			}
+		}
+	}
+
+	return result;
+}
+
+Var Var::toUpperCase() const
+{
+	var result;
+
+	if (this->internal_type == Var::string)
+	{
+		result = this->internal_string;
+
+		int length = result.internal_string.length();
+
+		for (int i = 0; i < length; i++)
+		{
+			if (97 <= result.internal_string[i] && result.internal_string[i] <= 122) {
+				result.internal_string[i] -= 32;
+			}
+		}
+	}
+
+	return result;
+}
+
+Var Var::trim() const
+{
+	var result;
+
+	if (this->internal_type == Var::string)
+	{
+		result = this->internal_string;
+
+		int blankLength = 0;
+
+		while
+		(
+			result.internal_string[blankLength] == ' '  ||
+			result.internal_string[blankLength] == '\n' ||
+			result.internal_string[blankLength] == '\t'
+		) {
+			blankLength++;
+		}
+
+		result.internal_string.erase(0, blankLength);
+
+		blankLength = result.internal_string.length() -1;
+
+		if (blankLength >0)
+		{
+			while
+			(
+				result.internal_string[blankLength] == ' '  ||
+				result.internal_string[blankLength] == '\n' ||
+				result.internal_string[blankLength] == '\t'
+			) {
+				blankLength--;
+			}
+
+			result.internal_string.erase(blankLength+1);
+		}
+	}
+
+	return result;
+}
+
+Var Var::split(const Var& separator) const
 {
 	std::string delimiter_cpp = separator.toString();
 	std::string string_cpp = this->toString();
