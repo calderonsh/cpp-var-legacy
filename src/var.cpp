@@ -1277,28 +1277,6 @@ Var& Var::operator <<(const Var& that)
 	return *this;
 }
 
-Var Var::charAt(const Var& index) const
-{
-	var result;
-
-	if (this->internal_type == Var::string) {
-		result = this->internal_string.substr((long)index, 1);
-	}
-
-	return result;
-}
-
-Var Var::charCodeAt(const Var& index) const
-{
-	var result;
-
-	if (this->internal_type == Var::string) {
-		return this->toString()[(long)index];
-	}
-
-	return result;
-}
-
 Var Var::concat(const var& that) const
 {
 	var result;
@@ -1317,17 +1295,6 @@ Var Var::concat(const var& that) const
 			}
 		}
 	}
-
-	return result;
-}
-
-Var Var::fromCharCode(const var& that)
-{
-	char code = (long)that;
-
-	std::string result;
-	result.resize(1);
-	result[0] = code;
 
 	return result;
 }
@@ -1361,6 +1328,67 @@ Var Var::lastIndexOf(const Var& searchvalue, const Var& start) const
 	if (this->internal_type == Var::string) {
 		result = (long)(this->internal_string.rfind(searchvalue.toString(), this->internal_string.size() - (long)start));
 	}
+
+	return result;
+}
+
+Var Var::slice(const Var& start) const
+{
+	return this->slice(start, (long)this->internal_string.size());
+}
+
+Var Var::slice(const Var& start, const Var& stop) const
+{
+	var result;
+
+	if (this->internal_type == Var::string)
+	{
+		long begin = start;
+		long end = stop;
+
+		begin = begin < 0 ? begin + this->internal_string.size(): begin;
+		begin = begin < 0 ? 0 : begin;
+		begin = begin > this->internal_string.size()? this->internal_string.size() : begin;
+
+		end = end < 0 ? end + this->internal_string.size() : end;
+		end = end < 0 ? 0 : end;
+		end = end > this->internal_string.size()? this->internal_string.size() : end;
+
+		result = this->internal_string.substr(begin, end - begin);
+	}
+
+	return result;
+}
+
+Var Var::charAt(const Var& index) const
+{
+	var result;
+
+	if (this->internal_type == Var::string) {
+		result = this->internal_string.substr((long)index, 1);
+	}
+
+	return result;
+}
+
+Var Var::charCodeAt(const Var& index) const
+{
+	var result;
+
+	if (this->internal_type == Var::string) {
+		return this->toString()[(long)index];
+	}
+
+	return result;
+}
+
+Var Var::fromCharCode(const var& that)
+{
+	char code = (long)that;
+
+	std::string result;
+	result.resize(1);
+	result[0] = code;
 
 	return result;
 }
@@ -1423,34 +1451,6 @@ Var Var::replace(const Var& searchvalue, const var& newvalue) const
 		free(ret_c);
 
 		result = ret;
-	}
-
-	return result;
-}
-
-Var Var::slice(const Var& start) const
-{
-	return this->slice(start, (long)this->internal_string.size());
-}
-
-Var Var::slice(const Var& start, const Var& stop) const
-{
-	var result;
-
-	if (this->internal_type == Var::string)
-	{
-		long begin = start;
-		long end = stop;
-
-		begin = begin < 0 ? begin + this->internal_string.size(): begin;
-		begin = begin < 0 ? 0 : begin;
-		begin = begin > this->internal_string.size()? this->internal_string.size() : begin;
-
-		end = end < 0 ? end + this->internal_string.size() : end;
-		end = end < 0 ? 0 : end;
-		end = end > this->internal_string.size()? this->internal_string.size() : end;
-
-		result = this->internal_string.substr(begin, end - begin);
 	}
 
 	return result;

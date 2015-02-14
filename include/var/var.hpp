@@ -101,19 +101,20 @@ class Var
 
 		Var& operator <<(const Var&);
 
-		Var charAt(const Var&) const;
-		Var charCodeAt(const Var&) const;
 		Var concat(const Var&) const;
-		static Var fromCharCode(const Var&);
 		Var indexOf(const Var&, const Var& start = 0) const;
 		Var lastIndexOf(const Var&) const;
-		Var lastIndexOf(const Var&, const Var&) const;
+		Var lastIndexOf(const Var&, const Var&) const
+		Var slice(const Var&) const;
+		Var slice(const Var&, const Var&) const;
+
+		Var charAt(const Var&) const;
+		Var charCodeAt(const Var&) const;
+		static Var fromCharCode(const Var&);
 		Var localeCompare(const Var&) const;
 		/* Var match(const Var&); */
 		Var replace(const Var&, const Var&) const;
 		/* Var search(const Var&); */
-		Var slice(const Var&) const;
-		Var slice(const Var&, const Var&) const;
 		Var split(const Var&) const;
 		Var substr(const Var&) const;
 		Var substr(const Var&, const Var&) const;
