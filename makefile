@@ -1,5 +1,5 @@
 GPPINCS=
-GPPFLAGS=-Wall -Werror -pedantic -O2
+GPPFLAGS=-std=c++11 -Wall -Werror -pedantic -O2
 
 MAJOR=1
 MINOR=4
@@ -34,7 +34,7 @@ deb: obj/var.o
 main: main.cpp obj/var.o
 	g++ obj/var.o main.cpp -I include/var $(GPPINCS) $(GPPFLAGS) -o main
 
-obj/var.o: src/var.cpp
+obj/var.o: src/var.cpp include/var/var.hpp
 	mkdir -p obj
 	g++ src/var.cpp -I include/var -c $(GPPFLAGS) -o obj/var.o
 

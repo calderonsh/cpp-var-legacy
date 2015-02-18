@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <list>
+#include <algorithm>
 
 #include "Var.hpp"
 
@@ -1277,7 +1278,7 @@ Var& Var::operator <<(const Var& that)
 	return *this;
 }
 
-Var Var::concat(const var& that) const
+Var Var::__concat(const var& that) const
 {
 	var result;
 
@@ -1456,6 +1457,24 @@ Var Var::replace(const Var& searchvalue, const var& newvalue) const
 	return result;
 }
 
+Var Var::split(const Var& separator) const
+{
+	std::string delimiter_cpp = separator.toString();
+	std::string string_cpp = this->toString();
+	Var ret_Var;
+	size_t previous = 0, next = 0;
+
+	while ( (next = string_cpp.find(delimiter_cpp, previous + delimiter_cpp.length()-1)) != std::string::npos)
+	{
+		ret_Var << string_cpp.substr(previous, next - previous);
+		previous = next + delimiter_cpp.length();
+	}
+
+	ret_Var << string_cpp.substr(previous);
+
+	return ret_Var;
+}
+
 Var Var::substr(const Var& start) const
 {
 	return this->substring(start, (long)this->internal_string.size());
@@ -1606,24 +1625,6 @@ Var Var::trim() const
 	return result;
 }
 
-Var Var::split(const Var& separator) const
-{
-	std::string delimiter_cpp = separator.toString();
-	std::string string_cpp = this->toString();
-	Var ret_Var;
-	size_t previous = 0, next = 0;
-
-	while ( (next = string_cpp.find(delimiter_cpp, previous + delimiter_cpp.length()-1)) != std::string::npos)
-	{
-		ret_Var << string_cpp.substr(previous, next - previous);
-		previous = next + delimiter_cpp.length();
-	}
-
-	ret_Var << string_cpp.substr(previous);
-
-	return ret_Var;
-}
-
 Var Var::join(const Var& separator)
 {
 		unsigned length = 0;
@@ -1658,6 +1659,71 @@ Var Var::join(const Var& separator)
 		}
 
 		return ret_cpp;
+}
+
+Var Var::pop()
+{
+	var result;
+
+	if (this->internal_type == Var::vector)
+	{
+		result = *(this->internal_vector[this->internal_vector.size()-1]);
+
+		delete this->internal_vector[this->internal_vector.size()-1];
+		this->internal_vector.pop_back();
+	}
+
+	return result;
+}
+
+void Var::__push(const Var& item)
+{
+	if (this->internal_type == Var::vector) {
+		this->internal_vector.push_back(new var(item));
+	}
+}
+
+Var Var::reverse()
+{
+	if (this->internal_type == Var::vector)
+	{
+		Var* temp = NULL;
+		size_t lastIndex = this->internal_vector.size() - 1;
+
+		for (size_t i = 0; i <= (lastIndex-i); i++)
+		{
+			temp = this->internal_vector[i];
+			this->internal_vector[i] = this->internal_vector[lastIndex - i];
+			this->internal_vector[lastIndex - i] = temp;
+		}
+	}
+
+	return Var();
+}
+
+Var Var::sort()
+{
+	var result;
+
+	if (this->internal_type == Var::vector) {
+		std::sort(this->internal_vector.begin(), this->internal_vector.end(), Var::_sort);
+	}
+
+	return result;
+}
+
+Var Var::shift()
+{
+	var result;
+
+	if (this->internal_type == Var::vector)
+	{
+		result = *(this->internal_vector[0]);
+		delete this->internal_vector[0];
+		this->internal_vector.erase(this->internal_vector.begin());
+	}
+
+	return result;
 }
 
 std::string Var::toString() const
@@ -2237,6 +2303,11 @@ inline void Var::decodeMap(const std::string& data, unsigned& i, Var::internal_m
 
 		value[mapKey.toString()] = mapValue;
 	}
+}
+
+bool Var::_sort(const Var* a, const Var* b)
+{
+	return *(a) < *(b);
 }
 
 Var& Var::decode(const Var& json)

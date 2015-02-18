@@ -56,6 +56,7 @@ class Var
 		static void decodeVector(const std::string& data, unsigned& i, internal_vector_type& value);
 		static void decodeMap(const std::string& data, unsigned& i, internal_map_type& value);
 
+		static bool _sort(const Var*, const Var*);
 
 	public:
 		Var();
@@ -101,10 +102,16 @@ class Var
 
 		Var& operator <<(const Var&);
 
-		Var concat(const Var&) const;
+		Var __concat(const Var&) const;
+		template <typename C> Var _concat(C c) { return Var(c); }
+		template <typename C, typename... Args>
+		Var _concat(C c, Args... args) { return Var(c).__concat(Var::_concat(args...));}
+		template <typename... Args>
+		Var concat(Args... args) { return this->__concat(Var::_concat(args...)); }
+
 		Var indexOf(const Var&, const Var& start = 0) const;
 		Var lastIndexOf(const Var&) const;
-		Var lastIndexOf(const Var&, const Var&) const
+		Var lastIndexOf(const Var&, const Var&) const;
 		Var slice(const Var&) const;
 		Var slice(const Var&, const Var&) const;
 
@@ -126,8 +133,17 @@ class Var
 		Var toUpperCase() const;
 		Var trim() const;
 
-
 		Var join(const Var&);
+		Var pop();
+		void __push(const Var&);
+		void _push(const Var& c) { this->__push(c); }
+		template <typename... Args>
+		void _push(const Var& c, Args... args) { this->__push(c); this->_push(args...); }
+		template <typename... Args>
+		Var push(Args... args) { this->_push(args...); return (long)this->size(); }
+		Var reverse();
+		Var shift();
+		Var sort();
 
 		std::string toString() const;
 
