@@ -1278,7 +1278,7 @@ Var& Var::operator <<(const Var& that)
 	return *this;
 }
 
-Var Var::__concat(const var& that) const
+Var Var::concat(const var& that) const
 {
 	var result;
 
@@ -1674,13 +1674,6 @@ Var Var::pop()
 	}
 
 	return result;
-}
-
-void Var::__push(const Var& item)
-{
-	if (this->internal_type == Var::vector) {
-		this->internal_vector.push_back(new var(item));
-	}
 }
 
 Var Var::reverse()
@@ -2308,6 +2301,13 @@ inline void Var::decodeMap(const std::string& data, unsigned& i, Var::internal_m
 bool Var::_sort(const Var* a, const Var* b)
 {
 	return *(a) < *(b);
+}
+
+void Var::_push(const Var& item)
+{
+	if (this->internal_type == Var::vector) {
+		this->internal_vector.push_back(new var(item));
+	}
 }
 
 Var& Var::decode(const Var& json)

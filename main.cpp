@@ -5,10 +5,11 @@
 
 int main(int argc, char** argv)
 {
-	var fruits; fruits.decode("[\"Banana\", \"Orange\", \"Apple\", \"Mango\"]");
-	var bla = fruits.push("Kiwi");
+	var str1 = "Hello,";
+	var str2 = " Miguel ";
+	var str3 = " world!";
+	var str4 = " Have a nice day!";
+	var res = str1.concat(str3);
 
-
-	printf("%s\n", fruits.encode().c_str());
-	printf("%s\n", bla.encode().c_str());
+	printf("%s\n", res.encode().c_str());
 }
