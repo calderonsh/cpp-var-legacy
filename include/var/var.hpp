@@ -1,4 +1,3 @@
-
 #ifndef __CPP_VAR__
 #define __CPP_VAR__
 
@@ -59,6 +58,7 @@ class Var
 		static bool _sort(const Var*, const Var*);
 		void _push(const Var&);
 		template <typename... Args> void _push(const Var& c, Args... args) { this->_push(c); this->_push(args...); }
+		Var _splice(const Var&, const Var&, const Var&);
 
 	public:
 		Var();
@@ -141,6 +141,8 @@ class Var
 		Var reverse();
 		Var shift();
 		Var sort();
+		template <typename... Args>
+		Var splice(const Var& index, const Var& howmany, Args... args) { Var array; array.push(args...); return this->_splice(index, howmany, array); }
 
 		std::string toString() const;
 

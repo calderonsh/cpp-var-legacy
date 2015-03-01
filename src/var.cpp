@@ -10,7 +10,8 @@
 #include "Var.hpp"
 
 
-Var::Var() {
+Var::Var()
+{
 	this->internal_type = Var::null;
 }
 
@@ -1694,17 +1695,6 @@ Var Var::reverse()
 	return Var();
 }
 
-Var Var::sort()
-{
-	var result;
-
-	if (this->internal_type == Var::vector) {
-		std::sort(this->internal_vector.begin(), this->internal_vector.end(), Var::_sort);
-	}
-
-	return result;
-}
-
 Var Var::shift()
 {
 	var result;
@@ -1714,6 +1704,17 @@ Var Var::shift()
 		result = *(this->internal_vector[0]);
 		delete this->internal_vector[0];
 		this->internal_vector.erase(this->internal_vector.begin());
+	}
+
+	return result;
+}
+
+Var Var::sort()
+{
+	var result;
+
+	if (this->internal_type == Var::vector) {
+		std::sort(this->internal_vector.begin(), this->internal_vector.end(), Var::_sort);
 	}
 
 	return result;
@@ -2305,9 +2306,38 @@ bool Var::_sort(const Var* a, const Var* b)
 
 void Var::_push(const Var& item)
 {
-	if (this->internal_type == Var::vector) {
-		this->internal_vector.push_back(new var(item));
+	if (this->internal_type != Var::vector)
+	{
+		this->clear();
+		this->internal_type = Var::vector;
 	}
+
+	this->internal_vector.push_back(new var(item));
+}
+
+Var Var::_splice(const Var& index, const Var& howmany, const Var& items)
+{
+	long i = 0;
+	long begin = (long)index;
+	long length = (long)howmany;
+
+	begin = begin < 0 ? begin + this->internal_vector.size(): begin;
+	begin = begin < 0 ? 0 : begin;
+	begin = begin > this->internal_vector.size()? this->internal_vector.size() : begin;
+
+	for (i = begin; i < length; i++) {
+		delete this->internal_vector[i];
+	}
+
+	this->internal_vector.erase(this->internal_vector.begin() + i, this->internal_vector.begin() + i + length);
+
+	this->internal_vector.insert(this->internal_vector.begin() + i, (long)items.size(), NULL);
+
+	for (i = 0; i < items.size(); i++) {
+		this->internal_vector[i+begin] = new Var(*(items.internal_vector[i]));
+	}
+
+	return Var();
 }
 
 Var& Var::decode(const Var& json)
