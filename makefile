@@ -9,9 +9,28 @@ PATCH=0
 all: main
 
 clean:
-	rm -rf dist obj main
+	rm -rf dist dylib obj main 
 
-.PHONY: all deb clean
+.PHONY: all deb dylib clean
+
+EXTENSION=so
+ifeq ($(shell uname -s), Darwin)
+EXTENSION=dylib
+endif
+
+install: $(EXTENSION)/libvar.$(EXTENSION)
+	cp $(EXTENSION)/libvar.$(EXTENSION) /usr/lib
+	mkdir -p /usr/include/var && cp include/var/var.hpp /usr/include/var
+
+main: main.cpp obj/var.o
+	g++ obj/var.o main.cpp -I include/var $(GPPINCS) $(GPPFLAGS) -o main
+
+$(EXTENSION): obj/var.o
+	mkdir -p $(EXTENSION) && g++ obj/var.o -shared -fPIC -o $(EXTENSION)/libvar.$(EXTENSION)
+
+obj/var.o: src/var.cpp include/var/var.hpp
+	mkdir -p obj
+	g++ src/var.cpp -I include/var -c $(GPPFLAGS) -o obj/var.o
 
 
 #Linux directives
@@ -30,13 +49,6 @@ deb: obj/var.o
 	cp obj/var.o deb/usr/lib/libvar.a
 	mkdir -p dist && dpkg -b deb/ dist
 	rm -rf deb
-
-main: main.cpp obj/var.o
-	g++ obj/var.o main.cpp -I include/var $(GPPINCS) $(GPPFLAGS) -o main
-
-obj/var.o: src/var.cpp include/var/var.hpp
-	mkdir -p obj
-	g++ src/var.cpp -I include/var -c $(GPPFLAGS) -o obj/var.o
 
 
 #Windows directives

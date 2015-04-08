@@ -49,6 +49,12 @@ Var::Var(long that)
 	this->internal_type = Var::integer;
 }
 
+Var::Var(unsigned long that)
+{
+	this->internal_long = that;
+	this->internal_type = Var::integer;
+}
+
 Var::Var(double that)
 {
 	this->internal_double = that;

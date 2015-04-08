@@ -69,6 +69,7 @@ class Var
 		Var(int);
 		Var(unsigned int);
 		Var(long);
+		Var(unsigned long);
 		Var(double);
 
 		Var(const char*);
