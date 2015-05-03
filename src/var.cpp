@@ -841,7 +841,7 @@ bool Var::operator <(const Var& that) const
 					return this->internal_bool < that.internal_double;
 
 				case Var::null:
-					return this->internal_bool < 0;
+					return false;
 
 			}
 			break;
@@ -1027,7 +1027,7 @@ bool Var::operator >(const Var& that) const
 			switch (that.internal_type)
 			{
 				case Var::boolean:
-					return 0 > that.internal_bool;
+					return false;
 
 				case Var::integer:
 					return 0 > that.internal_long;
@@ -1220,7 +1220,7 @@ Var& Var::operator [](const Var& that)
 			long i = that;
 
 			if (i < 0) {
-				i += this->internal_vector.size() * (ceil(fabs(i)/(float)this->internal_vector.size()));
+				i += this->internal_vector.size() * (ceil(i/(float)this->internal_vector.size()));
 			}
 
 			if (this->internal_vector.size() < (unsigned long)i)
@@ -1771,6 +1771,72 @@ bool Var::compare(const Var& that) const
 	}
 
 	return (*this == that);
+}
+
+bool Var::in(Var& that)
+{
+	switch(that.internal_type)
+	{
+		case Var::map:
+		{
+			Var::internal_map_type::iterator i;
+
+			if (this->internal_type == null)
+			{
+				i = that.internal_map.begin();
+
+				if (i != that.internal_map.end())
+				{
+					*this = i->first;
+					return true;
+				}
+			}
+			else
+			{
+				i = that.internal_map.find(this->toString());
+
+				if (i != that.internal_map.end())
+				{
+					i++;
+					if (i != that.internal_map.end())
+					{
+						*this = i-> first;
+						return true;
+					}
+				}
+			}
+		}
+		break;
+
+		case Var::vector:
+		{
+			if (this->internal_type == null)
+			{
+				*this = 0;
+				if (that.internal_vector.size() != 0) {
+					return true;
+				}
+			}
+			else
+			if (this->internal_type == Var::integer)
+			{
+				if (this->internal_long >= 0 && this->internal_long < that.internal_vector.size())
+				{
+					if (this->internal_long + 1 < that.internal_vector.size())
+					{
+						this->internal_long++;
+						return true;
+					}
+				}
+			}
+		}
+		break;
+
+		default:
+		break;
+	}
+
+	return false;
 }
 
 Var Var::key()
@@ -2362,6 +2428,7 @@ Var& Var::decode(const Var& json)
 
 Var Var:: operator +(int a) const { return operator +(Var(a)); }
 Var Var:: operator +(const char* a) const { return operator +(Var(a)); }
+Var Var:: operator -(int a) const { return operator -(Var(a)); }
 bool Var:: operator ==(bool a) const { return operator ==(Var(a)); }
 bool Var:: operator ==(int a) const{ return operator ==(Var(a)); }
 bool Var:: operator ==(float a) const { return operator ==(Var(a)); }

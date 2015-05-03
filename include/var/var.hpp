@@ -149,6 +149,8 @@ class Var
 
 		bool compare(const Var& that) const;
 
+		bool in(Var&);
+
 		Var key();
 		Var& operator *();
 
@@ -161,12 +163,16 @@ class Var
 		operator bool() const;
 		operator long() const;
 		operator double() const;
-		inline operator const char*() const { return this->toString().c_str(); }
 		operator void *() const;
 
+		inline operator int()const {return (long)*this;}
+		inline operator unsigned int()const {return (long)*this;}
+		inline operator float()const {return (double)*this; }
+		inline operator const char*() const { return this->toString().c_str(); }
 
 		Var operator +(int) const;
 		Var operator +(const char*) const;
+		Var operator -(int) const;
 		bool operator ==(bool) const;
 		bool operator ==(int) const;
 		bool operator ==(float) const;
@@ -186,6 +192,10 @@ inline Var operator+(char* a, const Var& b) {
 }
 inline Var operator+(const char* a, const Var& b) {
 	return Var(a) + b;
+}
+
+inline Var operator*(const Var& a, float b) {
+	return a * Var(b);
 }
 
 typedef Var var;

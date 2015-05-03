@@ -25,7 +25,9 @@ install: $(EXTENSION)/libvar.$(EXTENSION)
 main: main.cpp obj/var.o
 	g++ obj/var.o main.cpp -I include/var $(GPPINCS) $(GPPFLAGS) -o main
 
-$(EXTENSION): obj/var.o
+$(EXTENSION): $(EXTENSION)/libvar.$(EXTENSION)
+
+$(EXTENSION)/libvar.$(EXTENSION): obj/var.o
 	mkdir -p $(EXTENSION) && g++ obj/var.o -shared -fPIC -o $(EXTENSION)/libvar.$(EXTENSION)
 
 obj/var.o: src/var.cpp include/var/var.hpp
