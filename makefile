@@ -19,9 +19,6 @@ all: dist
 clean:
 	rm -rf dist $(EXTENSION) obj
 
-main: main.cpp obj/var.o
-	g++ obj/var.o main.cpp -I include/var $(GPPINCS) $(GPPFLAGS) -lphp -o main
-
 install: $(EXTENSION)/libvar.$(EXTENSION)
 	cp $(EXTENSION)/libvar.$(EXTENSION) /usr/lib
 	mkdir -p /usr/include/var && cp include/var/var.hpp /usr/include/var
