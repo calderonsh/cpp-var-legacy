@@ -7,7 +7,7 @@
 #include <list>
 #include <algorithm>
 
-#include "var.hpp"
+#include "var/var.hpp"
 
 
 Var::Var()

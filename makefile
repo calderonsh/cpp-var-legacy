@@ -1,17 +1,21 @@
+PROJECT=libvar
 GPPINCS=
 GPPFLAGS=-std=c++11 -Wall -Werror -pedantic -O2
-GPPLINKS=
+GPPLIBS=
 
-MAJOR=1
+MAJOR=0
 MINOR=4
-PATCH=0
+PATCH=1
 
-.PHONY: all deb so dylib clean
+OBJS= \
+obj/var.o \
 
 EXTENSION=so
 ifeq ($(shell uname -s), Darwin)
 EXTENSION=dylib
 endif
+
+.PHONY: all deb $(EXTENSION) clean
 
 #General purpouse
 all: dist
@@ -19,25 +23,25 @@ all: dist
 clean:
 	rm -rf dist $(EXTENSION) obj
 
-install: $(EXTENSION)/libvar.$(EXTENSION)
-	cp $(EXTENSION)/libvar.$(EXTENSION) /usr/lib
-	mkdir -p /usr/include/var && cp include/var/var.hpp /usr/include/var
+install: $(EXTENSION)/$(PROJECT).$(EXTENSION)
+	cp $(EXTENSION)/$(PROJECT).$(EXTENSION) /usr/lib
+	mkdir -p /usr/include/var && cp include/var/* /usr/include/var
 
-$(EXTENSION): $(EXTENSION)/libvar.$(EXTENSION)
+$(EXTENSION): $(EXTENSION)/$(PROJECT).$(EXTENSION)
 
-$(EXTENSION)/libvar.$(EXTENSION): obj/var.o
+$(EXTENSION)/$(PROJECT).$(EXTENSION): obj/var.o
 	mkdir -p $(EXTENSION)
-	g++ obj/var.o -shared -o $(EXTENSION)/libvar.$(EXTENSION)
+	g++ obj/var.o -shared -o $(EXTENSION)/$(PROJECT).$(EXTENSION)
 
-obj/var.o: src/var.cpp include/var/var.hpp
+obj/%.o: src/%.cpp
 	mkdir -p obj
-	g++ src/var.cpp -I include/var -c $(GPPFLAGS) -fPIC -o obj/var.o
+	g++ $< -I include $(GPPINCS) $(GPPFLAGS) -c -fPIC -o $@
 
 
 #Linux directives
 dist: deb
 
-deb: $(EXTENSION)/libvar.$(EXTENSION)
+deb: $(EXTENSION)/$(PROJECT).$(EXTENSION)
 	mkdir -p deb/DEBIAN
 
 	cat unix/control.in | sed \
@@ -49,7 +53,7 @@ deb: $(EXTENSION)/libvar.$(EXTENSION)
 	cp -r include/* deb/usr/include
 
 	mkdir -p deb/usr/lib/
-	cp so/libvar.so deb/usr/lib/libvar.so
+	cp $(EXTENSION)/$(PROJECT).$(EXTENSION) deb/usr/lib/
 
 	mkdir -p dist
 	dpkg -b deb/ dist
