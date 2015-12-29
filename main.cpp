@@ -6,36 +6,25 @@
 #include <map>
 
 #include <var.hpp>
+#include <php/php.hpp>
+using namespace php;
 
-
-var file_get_contents(const var &filename)
+class
 {
-	const char* filename_c = filename;
+	public:
+		static std::string stringify(const var& object)
+		{
+			return object.encode();
+		}
 
-	char *ret_c;
+		static var parse(const var& json)
+		{
+			var result;
+			result.decode(json);
 
-	FILE *file = fopen(filename_c, "r");
-
-	if (file == NULL) {
-		return false;
-	}
-
-	fseek (file , 0, SEEK_END);
-	size_t size = ftell(file);
-	rewind (file);
-
-	ret_c = (char*)malloc(size + 1);
-
-	size = fread(ret_c, 1, size, file);
-
-	fclose(file);
-
-	ret_c[size] = '\0';
-	var ret = ret_c;
-	free(ret_c);
-
-	return ret;
-}
+			return result;
+		}
+} JSON;
 
 class Console
 {
@@ -73,24 +62,37 @@ void Console::timeEnd(const var& label)
 
 Console console;
 
+#define forin(a,b) for(var a; a.in(b);)
 
 int main(int argc, char** argv)
 {
-	var mesh;
-
-	mesh.decode(file_get_contents("mesh.zrb"));
+	var mesh = JSON.parse(file_get_contents("mesh.zrb"));
 
 	console.time("Miguel");
-	var i;
-	while(i.in(mesh))
+
+	forin(i, mesh)
 	{
 		console.log(i);
 
-		var j;
-		while(j.in(mesh[i])) {
+		forin(j, mesh[i]) {
 			console.log(j + ": " + mesh[i][j].encode());
 		}
 	}
 
 	console.timeEnd("Miguel");
+
+	var dSample;
+
+	dSample.push("BrazilJS");
+	dSample.push(3.1415);
+
+
+	var objSample;
+
+	objSample["Key"] = "Value";
+	objSample["node"] = "js";
+
+	dSample.push(objSample);
+
+	console.log(JSON.stringify(dSample));
 }

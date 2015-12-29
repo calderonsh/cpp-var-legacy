@@ -167,6 +167,7 @@ class Var
 
 		inline operator int()const {return (long)*this;}
 		inline operator unsigned int()const {return (long)*this;}
+		inline operator unsigned long()const {return (long)*this;}
 		inline operator float()const {return (double)*this; }
 		inline operator const char*() const { return this->toString().c_str(); }
 

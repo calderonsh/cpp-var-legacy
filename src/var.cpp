@@ -7,7 +7,7 @@
 #include <list>
 #include <algorithm>
 
-#include "Var.hpp"
+#include "var.hpp"
 
 
 Var::Var()
@@ -1351,8 +1351,8 @@ Var Var::slice(const Var& start, const Var& stop) const
 
 	if (this->internal_type == Var::string)
 	{
-		long begin = start;
-		long end = stop;
+		unsigned long begin = start;
+		unsigned long end = stop;
 
 		begin = begin < 0 ? begin + this->internal_string.size(): begin;
 		begin = begin < 0 ? 0 : begin;
@@ -1493,8 +1493,8 @@ Var Var::substr(const Var& start, const Var& length) const
 
 	if (this->internal_type == Var::string)
 	{
-		long begin = start;
-		long size = length;
+		unsigned long begin = start;
+		unsigned long size = length;
 
 		begin = begin < 0 ? begin + this->internal_string.size(): begin;
 		begin = begin < 0 ? 0 : begin;
@@ -1517,8 +1517,8 @@ Var Var::substring(const Var& start, const Var& stop) const
 
 	if (this->internal_type == Var::string)
 	{
-		long begin = start;
-		long end = stop;
+		unsigned long begin = start;
+		unsigned long end = stop;
 
 		begin = begin < 0 ? 0 : begin;
 		begin = begin > this->internal_string.size()? this->internal_string.size() : begin;
@@ -1820,9 +1820,9 @@ bool Var::in(Var& that)
 			else
 			if (this->internal_type == Var::integer)
 			{
-				if (this->internal_long >= 0 && this->internal_long < that.internal_vector.size())
+				if (this->internal_long >= 0 && this->internal_long < (long)that.internal_vector.size())
 				{
-					if (this->internal_long + 1 < that.internal_vector.size())
+					if (this->internal_long + 1 < (long)that.internal_vector.size())
 					{
 						this->internal_long++;
 						return true;
@@ -2389,9 +2389,9 @@ void Var::_push(const Var& item)
 
 Var Var::_splice(const Var& index, const Var& howmany, const Var& items)
 {
-	long i = 0;
-	long begin = (long)index;
-	long length = (long)howmany;
+	unsigned long i = 0;
+	unsigned long begin = (long)index;
+	unsigned long length = (long)howmany;
 
 	begin = begin < 0 ? begin + this->internal_vector.size(): begin;
 	begin = begin < 0 ? 0 : begin;
