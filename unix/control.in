@@ -1,8 +1,9 @@
-Package: libvar
+Package: @PACKAGE
 Priority: extra
 Version: @MAJOR.@MINOR.@PATCH
 Architecture: amd64
+Installed-Size: @SIZE
 Maintainer: Miguel Calderon <miguel@calderon.pro.br>
-Depends: g++
-Description: Dynamically typed variables for C++.
+Depends: @DEPENDS
+Description: @DESCRIPTION
  Improves software memory management.
