@@ -1634,6 +1634,10 @@ Var Var::trim() const
 
 Var Var::join(const Var& separator)
 {
+		if (this->internal_type != Var::vector) {
+			return var();
+		}
+
 		unsigned length = 0;
 		std::string glue_cpp = separator.toString();
 		std::string ret_cpp;
