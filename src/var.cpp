@@ -2431,6 +2431,7 @@ Var& Var::decode(const Var& json)
 }
 
 Var Var:: operator +(int a) const { return operator +(Var(a)); }
+Var Var:: operator +(unsigned int a) const {return operator +(Var(a));}
 Var Var:: operator +(const char* a) const { return operator +(Var(a)); }
 Var Var:: operator -(int a) const { return operator -(Var(a)); }
 bool Var:: operator ==(bool a) const { return operator ==(Var(a)); }

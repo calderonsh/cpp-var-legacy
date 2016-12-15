@@ -172,6 +172,7 @@ class Var
 		inline operator const char*() const { return this->toString().c_str(); }
 
 		Var operator +(int) const;
+		Var operator +(unsigned int) const;
 		Var operator +(const char*) const;
 		Var operator -(int) const;
 		bool operator ==(bool) const;
@@ -191,6 +192,7 @@ class Var
 inline Var operator+(char* a, const Var& b) {
 	return Var((char*)a) + b;
 }
+
 inline Var operator+(const char* a, const Var& b) {
 	return Var(a) + b;
 }
