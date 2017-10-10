@@ -1424,9 +1424,13 @@ Var Var::replace(const Var& searchvalue, const var& newvalue) const
 
 	if (this->internal_type == Var::string)
 	{
-		const char* search_c  = searchvalue;
-		const char* replace_c = newvalue;
-		const char* subject_c = this->internal_string.c_str();
+		std::string strSearchvalue = searchvalue.toString();
+		std::string strNewvalue = newvalue.toString();
+		std::string strSubject = this->toString();
+
+		const char* search_c  = strSearchvalue.c_str();
+		const char* replace_c = strNewvalue.c_str();
+		const char* subject_c = strSubject.c_str();
 
 		int i, count = 0;
 		int replacelen = strlen(replace_c);
