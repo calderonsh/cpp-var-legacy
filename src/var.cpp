@@ -1426,7 +1426,7 @@ Var Var::replace(const Var& searchvalue, const var& newvalue) const
 	{
 		const char* search_c  = searchvalue;
 		const char* replace_c = newvalue;
-		const char* subject_c = *this;
+		const char* subject_c = this->internal_string.c_str();
 
 		int i, count = 0;
 		int replacelen = strlen(replace_c);
