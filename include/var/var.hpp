@@ -37,6 +37,8 @@ class Var
 		std::string	internal_string;
 		void*		internal_resource;
 
+		mutable std::string last_const_char_pointer;
+
 		typedef std::map <std::string, Var*> internal_map_type;
 		typedef std::vector <Var*> internal_vector_type;
 
@@ -87,6 +89,7 @@ class Var
 		Var operator *(const Var&) const;
 		Var operator /(const Var&) const;
 
+		Var& operator ++();
 		Var& operator ++(int);
 		Var& operator --(int);
 
@@ -149,11 +152,7 @@ class Var
 
 		bool compare(const Var& that) const;
 
-		bool in(Var&);
-
-		Var key();
 		Var& operator *();
-
 		Var begin();
 		Var end();
 
@@ -164,12 +163,12 @@ class Var
 		operator long() const;
 		operator double() const;
 		operator void *() const;
+		operator const char*() const;
 
 		inline operator int()const {return (long)*this;}
 		inline operator unsigned int()const {return (long)*this;}
 		inline operator unsigned long()const {return (long)*this;}
 		inline operator float()const {return (double)*this; }
-		inline operator const char*() const { return this->toString().c_str(); }
 
 		Var operator +(int) const;
 		Var operator +(unsigned int) const;
@@ -186,7 +185,6 @@ class Var
 		Var& operator [](int);
 		Var& operator [](const char*);
 		Var& operator <<(int);
-
 };
 
 inline Var operator+(char* a, const Var& b) {
@@ -202,5 +200,6 @@ inline Var operator*(const Var& a, float b) {
 }
 
 typedef Var var;
+#define in :
 
 #endif /* __CPP_VAR__ */

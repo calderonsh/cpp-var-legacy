@@ -3,8 +3,8 @@ DESCRIPTION="Dynamically typed variables for C++"
 DEPENDS="g++"
 
 MAJOR=0
-MINOR=4
-PATCH=3
+MINOR=5
+PATCH=1
 
 GPPINCS=
 GPPLIBS=
@@ -41,7 +41,7 @@ $(OUTPUT): $(OBJS)
 	mkdir -p $(EXTENSION)
 	g++ $(OBJS) -shared -o $(OUTPUT)
 
-obj/%.o: src/%.cpp
+obj/%.o: src/%.cpp include/$(PROJECT)/%.hpp
 	mkdir -p obj
 	g++ $< -I include $(GPPINCS) $(GPPFLAGS) -c -fPIC -o $@
 
@@ -78,7 +78,7 @@ deb: $(OUTPUT)
 	cp $(OUTPUT) deb/usr/lib/
 
 	mkdir -p deb/DEBIAN
-	
+
 	touch deb/DEBIAN/control
 	cat unix/control.in | sed \
 	 -e s/@PACKAGE/${PACKAGE}/g \
