@@ -4,7 +4,7 @@ DEPENDS="g++"
 
 MAJOR=0
 MINOR=5
-PATCH=1
+PATCH=2
 
 GPPINCS=
 GPPLIBS=
@@ -51,6 +51,8 @@ obj/%.o: src/%.cpp include/$(PROJECT)/%.hpp
 PACKAGEDEV=$(PACKAGE)-dev
 DEPENDSDEV=$(PACKAGE)
 
+dist: deb dev
+
 dev:
 	mkdir -p deb/usr/include
 	cp -r include/* deb/usr/include
@@ -70,8 +72,6 @@ dev:
 	dpkg -b deb/ dist
 
 	rm -rf deb
-
-dist: deb
 
 deb: $(OUTPUT)
 	mkdir -p deb/usr/lib/
