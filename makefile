@@ -3,8 +3,8 @@ DESCRIPTION="Dynamically typed variables for C++"
 DEPENDS="g++"
 
 MAJOR=0
-MINOR=5
-PATCH=2
+MINOR=6
+PATCH=0
 
 GPPINCS=
 GPPLIBS=

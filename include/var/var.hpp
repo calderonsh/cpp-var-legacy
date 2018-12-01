@@ -11,6 +11,7 @@ class Var
 	public:
 		enum Var_t
 		{
+			undefined,
 			null,
 			boolean,
 			integer,
