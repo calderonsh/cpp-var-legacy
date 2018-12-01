@@ -46,7 +46,8 @@ class Var
 		internal_vector_type internal_vector;
 		internal_vector_type::iterator internal_vector_iterator;
 
-		Var num() const;
+		Var toNumber() const;
+		std::string toString() const;
 
 		static void decodeSub(const std::string& data, unsigned& i, Var& value);
 		static void decodeNumber(const std::string& data, unsigned& i, double& value);
@@ -145,8 +146,6 @@ class Var
 		Var sort();
 		template <typename... Args>
 		Var splice(const Var& index, const Var& howmany, Args... args) { Var array; array.push(args...); return this->_splice(index, howmany, array); }
-
-		std::string toString() const;
 
 		bool compare(const Var& that) const;
 

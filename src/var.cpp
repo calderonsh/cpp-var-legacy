@@ -343,7 +343,7 @@ Var Var::operator +(const Var& that) const
 
 Var Var::operator -(const Var& that) const
 {
-	Var result = this->num();
+	Var result = this->toNumber();
 
 	switch (result.internal_type)
 	{
@@ -372,7 +372,7 @@ Var Var::operator -(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
-					return result - that.num();
+					return result - that.toNumber();
 			}
 			break;
 
@@ -400,7 +400,7 @@ Var Var::operator -(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
-					return result - that.num();
+					return result - that.toNumber();
 			}
 			break;
 	}
@@ -410,7 +410,7 @@ Var Var::operator -(const Var& that) const
 
 Var Var::operator *(const Var& that) const
 {
-	Var result = this->num();
+	Var result = this->toNumber();
 
 	switch (result.internal_type)
 	{
@@ -439,7 +439,7 @@ Var Var::operator *(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
-					return result * that.num();
+					return result * that.toNumber();
 			}
 			break;
 
@@ -467,7 +467,7 @@ Var Var::operator *(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
-					return result * that.num();
+					return result * that.toNumber();
 			}
 			break;
 	}
@@ -477,7 +477,7 @@ Var Var::operator *(const Var& that) const
 
 Var Var::operator /(const Var& that) const
 {
-	Var result = this->num();
+	Var result = this->toNumber();
 
 	switch (result.internal_type)
 	{
@@ -506,7 +506,7 @@ Var Var::operator /(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
-					return result / that.num();
+					return result / that.toNumber();
 			}
 			break;
 
@@ -534,7 +534,7 @@ Var Var::operator /(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
-					return result / that.num();
+					return result / that.toNumber();
 			}
 			break;
 	}
@@ -1351,8 +1351,8 @@ Var& Var::operator <<(const Var& that)
 
 	for (this->internal_map_iterator = this->internal_map.begin(); this->internal_map_iterator != this->internal_map.end(); this->internal_map_iterator++)
 	{
-		if (Var(this->internal_map_iterator->first).num().compare(last) ) {
-			last = (last > Var(this->internal_map_iterator->first).num() ? last : Var(this->internal_map_iterator->first).num() ) + 1;
+		if (Var(this->internal_map_iterator->first).toNumber().compare(last) ) {
+			last = (last > Var(this->internal_map_iterator->first).toNumber() ? last : Var(this->internal_map_iterator->first).toNumber() ) + 1;
 		}
 	}
 
@@ -1926,7 +1926,7 @@ unsigned long Var::size() const
 	return 0;
 }
 
-Var Var::num() const
+Var Var::toNumber() const
 {
 	Var result;
 	switch (this->internal_type)
