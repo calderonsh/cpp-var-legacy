@@ -2462,34 +2462,3 @@ Var& Var:: operator <<(int a) { return operator<<(Var(a)); }
 int Var::type(const Var& that) {
 	return that.internal_type;
 }
-
-int Var::exists(const Var& haystack, const Var& needle)
-{
-	unsigned size = 0;
-	switch (haystack.internal_type)
-	{
-		case Var::map:
-
-			for (Var::internal_map_type::const_iterator iterador = haystack.internal_map.begin(); iterador != haystack.internal_map.end(); iterador++)
-			{
-				if ((iterador->first).compare(needle.toString())) {
-					return 1;
-				}
-			}
-
-		break;
-
-		case Var::vector:
-			size = (int)needle;
-			if (size > 0 && size < haystack.internal_vector.size()) {
-				return 1;
-			}
-
-		break;
-
-		default:
-			return 0;
-	}
-
-	return 0;
-}

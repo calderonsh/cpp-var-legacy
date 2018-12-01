@@ -25,8 +25,6 @@ class Var
 		};
 
 		static int type(const Var& that);
-		static int exists(const Var& haystack, const Var& needle);
-
 
 	private:
 		unsigned	internal_type;
