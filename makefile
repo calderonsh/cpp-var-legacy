@@ -9,47 +9,44 @@ PATCH=0
 GPPINCS=
 GPPLIBS=
 GPPFLAGS=-std=c++11 -Wall -Werror -pedantic -O2
+CC=g++
 
 OBJS= \
 obj/var.o \
 
 BINARY=lib$(PROJECT)
 
-EXTENSION=so
-ifeq ($(shell uname -s), Darwin)
-EXTENSION=dylib
+TARGET=so
+ifeq ($(TARGET), dll)
+CC=i686-w64-mingw32-g++
 endif
 
 PACKAGE=lib$(PROJECT)
-OUTPUT=$(EXTENSION)/$(PACKAGE).$(EXTENSION)
+OUTPUT=$(TARGET)/$(PACKAGE).$(TARGET)
 
-.PHONY: all deb $(EXTENSION) clean
+.PHONY: all deb so dll clean
 
 #General purpouse
-all: dist
+all: $(OUTPUT)
 
 clean:
-	rm -rf dist $(EXTENSION) obj
+	rm -rf dist so dll obj
 
-install: $(OUTPUT)
-	cp $(OUTPUT) /usr/lib
-	mkdir -p /usr/include/$(PROJECT) && cp include/$(PROJECT)/* /usr/include/$(PROJECT)
-
-$(EXTENSION): $(OUTPUT)
+$(TARGET): $(OUTPUT)
 
 $(OUTPUT): $(OBJS)
-	mkdir -p $(EXTENSION)
-	g++ $(OBJS) -shared -o $(OUTPUT)
+	mkdir -p $(TARGET)
+	$(CC) $(OBJS) -shared -o $(OUTPUT)
 
 obj/%.o: src/%.cpp include/$(PROJECT)/%.hpp
 	mkdir -p obj
-	g++ $< -I include $(GPPINCS) $(GPPFLAGS) -c -fPIC -o $@
+	$(CC) $< -I include $(GPPINCS) $(GPPFLAGS) -c -fPIC -o $@
 
 
 #Linux directives
 
 PACKAGEDEV=$(PACKAGE)-dev
-DEPENDSDEV=$(PACKAGE)
+DEPENDSDEV=$(PACKAGE) $(DEPENDS)
 
 dist: deb dev
 
