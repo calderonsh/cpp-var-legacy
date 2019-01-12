@@ -1,6 +1,6 @@
 PROJECT=var
 DESCRIPTION="Dynamically typed variables for C++"
-DEPENDS="g++"
+DEPENDS=g++
 
 MAJOR=0
 MINOR=6
@@ -46,7 +46,7 @@ obj/%.o: src/%.cpp include/$(PROJECT)/%.hpp
 #Linux directives
 
 PACKAGEDEV=$(PACKAGE)-dev
-DEPENDSDEV=$(PACKAGE) $(DEPENDS)
+DEPENDSDEV="$(PACKAGEDEV), $(DEPENDS)"
 
 dist: deb dev
 
@@ -84,7 +84,7 @@ deb: $(OUTPUT)
 	 -e s/@MINOR/${MINOR}/g \
 	 -e s/@PATCH/${PATCH}/g \
 	 -e s/@DEPENDS/${DEPENDS}/g \
-	 -e s/@SIZE/$(shell du -c  --exclude=DEBIAN $(EXTENSION)/* | grep total | sed 's/[ \t]*total//')/g > deb/DEBIAN/control
+	 -e s/@SIZE/$(shell du -c --apparent-size so/* --exclude=DEBIAN | grep total | sed 's/[ \t]*total//')/g > deb/DEBIAN/control
 
 	mkdir -p dist
 	dpkg -b deb/ dist
