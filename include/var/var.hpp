@@ -179,6 +179,7 @@ class Var
 		bool operator ==(const char*) const;
 		bool operator !=(int) const;
 		bool operator !=(const char*) const;
+		bool operator <(int) const;
 		bool operator <(unsigned int) const;
 		Var& operator [](int);
 		Var& operator [](const char*);
