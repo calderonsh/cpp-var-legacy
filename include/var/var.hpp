@@ -22,7 +22,6 @@ class Var
 			map_iterator,
 			vector,
 			vector_iterator,
-			resource
 		};
 
 		static int type(const Var& that);
@@ -34,7 +33,6 @@ class Var
 		long		internal_long;
 		double		internal_double;
 		std::string	internal_string;
-		void*		internal_resource;
 
 		mutable std::string last_const_char_pointer;
 
@@ -76,7 +74,6 @@ class Var
 
 		Var(const char*);
 		Var(const std::string&);
-		Var(void*);
 		~Var();
 
 		std::string encode() const;
@@ -160,7 +157,6 @@ class Var
 		operator bool() const;
 		operator long() const;
 		operator double() const;
-		operator void *() const;
 		operator const char*() const;
 
 		inline operator int()const {return (long)*this;}

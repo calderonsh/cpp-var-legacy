@@ -71,12 +71,6 @@ Var::Var(const std::string& that)
 	this->internal_type = Var::string;
 }
 
-Var::Var(void* that)
-{
-	this->internal_resource = that;
-	this->internal_type = Var::resource;
-}
-
 Var::~Var()
 {
 	this->clear();
@@ -116,10 +110,6 @@ void Var::clear()
 				delete this->internal_vector[i];
 			}
 			this->internal_vector.clear();
-			break;
-
-		case Var::resource:
-			this->internal_resource = NULL;
 			break;
 	}
 
@@ -188,12 +178,6 @@ Var& Var::operator =(const Var& that)
 			this->internal_vector_iterator = that.internal_vector_iterator;
 			this->internal_long = that.internal_long;
 			this->internal_type = Var::vector_iterator;
-
-			break;
-
-		case Var::resource:
-			this->internal_resource = that.internal_resource;
-			this->internal_type = Var::resource;
 
 			break;
 
@@ -636,7 +620,7 @@ bool Var::operator ==(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
-					for (unsigned i = 0; i < that.internal_string.length(); i++)
+					for (unsigned i = 0; i < that.internal_string.size(); i++)
 						if ( (that.internal_string[i] < '0' || that.internal_string[i] > '9') && that.internal_string[i] != '.')
 							return this->internal_long == 0;
 
@@ -662,7 +646,7 @@ bool Var::operator ==(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
-					for (unsigned i = 0; i < that.internal_string.length(); i++)
+					for (unsigned i = 0; i < that.internal_string.size(); i++)
 						if ( (that.internal_string[i] < '0' || that.internal_string[i] > '9') && that.internal_string[i] != '.')
 							return this->internal_double == 0;
 
@@ -679,14 +663,14 @@ bool Var::operator ==(const Var& that) const
 			{
 				case Var::vector_iterator:
 				case Var::integer:
-					for (unsigned i = 0; i < this->internal_string.length(); i++)
+					for (unsigned i = 0; i < this->internal_string.size(); i++)
 						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
 							return 0 == that.internal_long;
 
 					return operator double() == that.internal_long;
 
 				case Var::real:
-					for (unsigned i = 0; i < this->internal_string.length(); i++)
+					for (unsigned i = 0; i < this->internal_string.size(); i++)
 						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
 							return 0 == that.internal_double;
 
@@ -696,11 +680,6 @@ bool Var::operator ==(const Var& that) const
 				case Var::string:
 					return this->internal_string == that.internal_string ;
 			}
-			break;
-
-		case Var::resource:
-			if (that.internal_type == Var::resource && this->internal_resource == that.internal_resource)
-				return true;
 			break;
 
 		case Var::null:
@@ -764,7 +743,7 @@ bool Var::operator !=(const Var& that) const
 					return this->internal_long != that.internal_double;
 
 				case Var::string:
-					for (unsigned i = 0; i < that.internal_string.length(); i++)
+					for (unsigned i = 0; i < that.internal_string.size(); i++)
 						if ( (that.internal_string[i] < '0' || that.internal_string[i] > '9') && that.internal_string[i] != '.')
 							return this->internal_long != 0;
 
@@ -789,7 +768,7 @@ bool Var::operator !=(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
-					for (unsigned i = 0; i < that.internal_string.length(); i++)
+					for (unsigned i = 0; i < that.internal_string.size(); i++)
 						if ( (that.internal_string[i] < '0' || that.internal_string[i] > '9') && that.internal_string[i] != '.')
 							return this->internal_double != 0;
 
@@ -808,14 +787,14 @@ bool Var::operator !=(const Var& that) const
 					return this->internal_string != that.internal_string ;
 
 				case Var::integer:
-					for (unsigned i = 0; i < this->internal_string.length(); i++)
+					for (unsigned i = 0; i < this->internal_string.size(); i++)
 						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
 							return 0 != that.internal_long;
 
 					return operator double() != that.internal_long;
 
 				case Var::real:
-					for (unsigned i = 0; i < this->internal_string.length(); i++)
+					for (unsigned i = 0; i < this->internal_string.size(); i++)
 						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
 							return 0 != that.internal_double;
 
@@ -837,11 +816,6 @@ bool Var::operator !=(const Var& that) const
 				case Var::vector_iterator:
 					return this->internal_vector_iterator != that.internal_vector_iterator;
 			}
-			break;
-
-		case Var::resource:
-			if (this->internal_resource != that.internal_resource)
-				return true;
 			break;
 
 		case Var::null:
@@ -906,7 +880,7 @@ bool Var::operator <(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
-					for (unsigned i = 0; i < that.internal_string.length(); i++)
+					for (unsigned i = 0; i < that.internal_string.size(); i++)
 						if ( (that.internal_string[i] < '0' || that.internal_string[i] > '9') && that.internal_string[i] != '.')
 							return this->internal_long < 0;
 
@@ -932,7 +906,7 @@ bool Var::operator <(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
-					for (unsigned i = 0; i < that.internal_string.length(); i++)
+					for (unsigned i = 0; i < that.internal_string.size(); i++)
 						if ( (that.internal_string[i] < '0' || that.internal_string[i] > '9') && that.internal_string[i] != '.')
 							return this->internal_double < 0;
 
@@ -948,14 +922,14 @@ bool Var::operator <(const Var& that) const
 			switch (that.internal_type)
 			{
 				case Var::integer:
-					for (unsigned i = 0; i < this->internal_string.length(); i++)
+					for (unsigned i = 0; i < this->internal_string.size(); i++)
 						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
 							return 0 < that.internal_long;
 
 					return operator double() < that.internal_long;
 
 				case Var::real:
-					for (unsigned i = 0; i < this->internal_string.length(); i++)
+					for (unsigned i = 0; i < this->internal_string.size(); i++)
 						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
 							return 0 < that.internal_double;
 
@@ -984,9 +958,6 @@ bool Var::operator <(const Var& that) const
 					return false;
 			}
 			break;
-
-		case Var::resource:
-				return false;
 	}
 
 	return false;
@@ -1065,14 +1036,14 @@ bool Var::operator >(const Var& that) const
 			{
 				case Var::vector_iterator:
 				case Var::integer:
-					for (unsigned i = 0; i < this->internal_string.length(); i++)
+					for (unsigned i = 0; i < this->internal_string.size(); i++)
 						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
 							return 0 > that.internal_long;
 
 					return operator double() > that.internal_long;
 
 				case Var::real:
-					for (unsigned i = 0; i < this->internal_string.length(); i++)
+					for (unsigned i = 0; i < this->internal_string.size(); i++)
 						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
 							return 0 > this->internal_double;
 
@@ -1101,9 +1072,6 @@ bool Var::operator >(const Var& that) const
 					return false;
 			}
 			break;
-
-		case Var::resource:
-			return false;
 	}
 
 	return false;
@@ -1637,7 +1605,7 @@ Var Var::toLowerCase() const
 	{
 		result = this->internal_string;
 
-		int length = result.internal_string.length();
+		int length = result.internal_string.size();
 
 		for (int i = 0; i < length; i++)
 		{
@@ -1658,7 +1626,7 @@ Var Var::toUpperCase() const
 	{
 		result = this->internal_string;
 
-		int length = result.internal_string.length();
+		int length = result.internal_string.size();
 
 		for (int i = 0; i < length; i++)
 		{
@@ -1692,7 +1660,7 @@ Var Var::trim() const
 
 		result.internal_string.erase(0, blankLength);
 
-		blankLength = result.internal_string.length() -1;
+		blankLength = result.internal_string.size() -1;
 
 		if (blankLength >0)
 		{
@@ -1914,7 +1882,7 @@ unsigned long Var::size() const
 	{
 		case Var::map_iterator:
 		case Var::string:
-			return this->internal_string.length();
+			return this->internal_string.size();
 
 		case Var::map:
 			return this->internal_map.size();
@@ -1980,9 +1948,6 @@ Var::operator bool() const
 
 		case Var::vector:
 			return !this->internal_vector.empty();
-
-		case Var::resource:
-			return this->internal_resource ? true : false;
 	}
 
 	return false;
@@ -2030,15 +1995,6 @@ Var::operator double() const
 	}
 
 	return 0;
-}
-
-Var::operator void *() const
-{
-	if (this->internal_type == Var::resource) {
-		return this->internal_resource;
-	} else {
-		return NULL;
-	}
 }
 
 Var::operator const char*() const
@@ -2137,9 +2093,6 @@ std::string Var::encode() const
 			} else {
 				return "[]";
 			}
-
-		case Var::resource:
-			return "\"(resource)\"";
 
 		default:
 			return "null";
