@@ -621,8 +621,16 @@ bool Var::operator ==(const Var& that) const
 				case Var::map_iterator:
 				case Var::string:
 					for (unsigned i = 0; i < that.internal_string.size(); i++)
-						if ( (that.internal_string[i] < '0' || that.internal_string[i] > '9') && that.internal_string[i] != '.')
-							return this->internal_long == 0;
+					{
+						char c = that.internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return false;
+						}
+					}
 
 					return this->internal_long == (double)that;
 
@@ -647,8 +655,16 @@ bool Var::operator ==(const Var& that) const
 				case Var::map_iterator:
 				case Var::string:
 					for (unsigned i = 0; i < that.internal_string.size(); i++)
-						if ( (that.internal_string[i] < '0' || that.internal_string[i] > '9') && that.internal_string[i] != '.')
-							return this->internal_double == 0;
+					{
+						char c = that.internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return false;
+						}
+					}
 
 					return this->internal_double == (double)that;
 
@@ -664,15 +680,31 @@ bool Var::operator ==(const Var& that) const
 				case Var::vector_iterator:
 				case Var::integer:
 					for (unsigned i = 0; i < this->internal_string.size(); i++)
-						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
-							return 0 == that.internal_long;
+					{
+						char c = this->internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return false;
+						}
+					}
 
 					return operator double() == that.internal_long;
 
 				case Var::real:
 					for (unsigned i = 0; i < this->internal_string.size(); i++)
-						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
-							return 0 == that.internal_double;
+					{
+						char c = this->internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return false;
+						}
+					}
 
 					return operator double() == that.internal_double;
 
@@ -744,8 +776,16 @@ bool Var::operator !=(const Var& that) const
 
 				case Var::string:
 					for (unsigned i = 0; i < that.internal_string.size(); i++)
-						if ( (that.internal_string[i] < '0' || that.internal_string[i] > '9') && that.internal_string[i] != '.')
-							return this->internal_long != 0;
+					{
+						char c = that.internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return true;
+						}
+					}
 
 					return this->internal_long != (double)that;
 
@@ -769,8 +809,16 @@ bool Var::operator !=(const Var& that) const
 				case Var::map_iterator:
 				case Var::string:
 					for (unsigned i = 0; i < that.internal_string.size(); i++)
-						if ( (that.internal_string[i] < '0' || that.internal_string[i] > '9') && that.internal_string[i] != '.')
-							return this->internal_double != 0;
+					{
+						char c = that.internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return true;
+						}
+					}
 
 					return this->internal_double != (double)that;
 
@@ -788,15 +836,31 @@ bool Var::operator !=(const Var& that) const
 
 				case Var::integer:
 					for (unsigned i = 0; i < this->internal_string.size(); i++)
-						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
-							return 0 != that.internal_long;
+					{
+						char c = this->internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return true;
+						}
+					}
 
 					return operator double() != that.internal_long;
 
 				case Var::real:
 					for (unsigned i = 0; i < this->internal_string.size(); i++)
-						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
-							return 0 != that.internal_double;
+					{
+						char c = this->internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return true;
+						}
+					}
 
 					return operator double() != that.internal_double;
 			}
@@ -881,8 +945,16 @@ bool Var::operator <(const Var& that) const
 				case Var::map_iterator:
 				case Var::string:
 					for (unsigned i = 0; i < that.internal_string.size(); i++)
-						if ( (that.internal_string[i] < '0' || that.internal_string[i] > '9') && that.internal_string[i] != '.')
-							return this->internal_long < 0;
+					{
+						char c = that.internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return false;
+						}
+					}
 
 					return this->internal_long < (double)that;
 
@@ -907,8 +979,16 @@ bool Var::operator <(const Var& that) const
 				case Var::map_iterator:
 				case Var::string:
 					for (unsigned i = 0; i < that.internal_string.size(); i++)
-						if ( (that.internal_string[i] < '0' || that.internal_string[i] > '9') && that.internal_string[i] != '.')
-							return this->internal_double < 0;
+					{
+						char c = that.internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return false;
+						}
+					}
 
 					return this->internal_double < (double)that;
 
@@ -923,15 +1003,31 @@ bool Var::operator <(const Var& that) const
 			{
 				case Var::integer:
 					for (unsigned i = 0; i < this->internal_string.size(); i++)
-						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
-							return 0 < that.internal_long;
+					{
+						char c = this->internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return false;
+						}
+					}
 
 					return operator double() < that.internal_long;
 
 				case Var::real:
 					for (unsigned i = 0; i < this->internal_string.size(); i++)
-						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
-							return 0 < that.internal_double;
+					{
+						char c = this->internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return false;
+						}
+					}
 
 					return operator double() < that.internal_double;
 
@@ -1001,6 +1097,18 @@ bool Var::operator >(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
+					for (unsigned i = 0; i < that.internal_string.size(); i++)
+					{
+						char c = that.internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return false;
+						}
+					}
+
 					return this->internal_long > (double)that;
 
 				case Var::null:
@@ -1023,6 +1131,17 @@ bool Var::operator >(const Var& that) const
 
 				case Var::map_iterator:
 				case Var::string:
+					for (unsigned i = 0; i < that.internal_string.size(); i++)
+					{
+						char c = that.internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return false;
+						}
+					}
 					return this->internal_double > (double)that;
 
 				case Var::null:
@@ -1037,15 +1156,31 @@ bool Var::operator >(const Var& that) const
 				case Var::vector_iterator:
 				case Var::integer:
 					for (unsigned i = 0; i < this->internal_string.size(); i++)
-						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
-							return 0 > that.internal_long;
+					{
+						char c = this->internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return false;
+						}
+					}
 
 					return operator double() > that.internal_long;
 
 				case Var::real:
 					for (unsigned i = 0; i < this->internal_string.size(); i++)
-						if ( (this->internal_string[i] < '0' || this->internal_string[i] > '9') && this->internal_string[i] != '.')
-							return 0 > this->internal_double;
+					{
+						char c = this->internal_string[i];
+						if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+							continue;
+						}
+
+						if ( (c < '0' || c > '9') && c != '.') {
+							return false;
+						}
+					}
 
 					return operator double() > that.internal_double;
 
@@ -1652,6 +1787,7 @@ Var Var::trim() const
 		while
 		(
 			result.internal_string[blankLength] == ' '  ||
+			result.internal_string[blankLength] == '\r' ||
 			result.internal_string[blankLength] == '\n' ||
 			result.internal_string[blankLength] == '\t'
 		) {
@@ -1667,6 +1803,7 @@ Var Var::trim() const
 			while
 			(
 				result.internal_string[blankLength] == ' '  ||
+				result.internal_string[blankLength] == '\r' ||
 				result.internal_string[blankLength] == '\n' ||
 				result.internal_string[blankLength] == '\t'
 			) {
@@ -2107,9 +2244,9 @@ void Var::decodeSub(const std::string& data, unsigned& i, Var& value)
 
 	for (; i < data.length(); i++)
 	{
-		while (data[i] == ' ') i++;
+		while (data[i] == ' ' || data[i] == '\n' || data[i] == '\r' || data[i] == '\t') i++;
 
-		if ( (data[i] >= '0' && data[i] <= '9') || data[i] == '-') /* [-0-9] */
+		if ( (data[i] >= '0' && data[i] <= '9') || (data[i] == '-' && data[i+1] >= '0' && data[i+1] <= '9')) /* [-0-9] */
 		{
 			Var::decodeNumber(data, i, value.internal_double);
 
@@ -2125,7 +2262,14 @@ void Var::decodeSub(const std::string& data, unsigned& i, Var& value)
 			return;
 		}
 
-		if ((data[i] >= 'a' && data[i] <= 'z') || (data[i] >= 'A' && data[i] <= 'Z') || data[i] == '$'|| data[i] == '_') /* [_a-zA-Z] */
+		if ((data[i] >= 'a' && data[i] <= 'z') ||
+			(data[i] >= 'A' && data[i] <= 'Z') ||
+			 data[i] == '$' || data[i] == '_' ||
+			 data[i] == '-' || data[i] == '+' ||
+			 data[i] == '*' || data[i] == '/' ||
+			 data[i] == '=' || data[i] == '!' ||
+			 data[i] == '<' || data[i] == '>'
+			) /* [_a-zA-Z] */
 		{
 			Var::decodeSymbol(data, i, value.internal_string);
 
@@ -2183,6 +2327,12 @@ void Var::decodeSub(const std::string& data, unsigned& i, Var& value)
 
 			case ',':
 			case ':':
+			case ' ':
+			case '\r':
+			case '\n':
+			case '\t':
+			case '\x01':
+
 				return;
 
 			default:
@@ -2216,7 +2366,16 @@ inline void Var::decodeSymbol(const std::string& data, unsigned& i, std::string&
 	unsigned begin = i;
 	for (unsigned j = 0; i < data.length(); i++, j++)
 	{
-		if ( !(data[i] == '$' || data[i] == '_' || (data[i] >= 'a' && data[i] <= 'z') || (data[i] >= 'A' && data[i] <= 'Z') || (data[i] >= '0' && data[i] <= '9')) ) /* [_a-zA-Z0-9] */ {
+		if ( !((data[i] >= 'a' && data[i] <= 'z') ||
+			   (data[i] >= 'A' && data[i] <= 'Z') ||
+			   (data[i] >= '0' && data[i] <= '9') ||
+			    data[i] == '$' || data[i] == '_'  ||
+			    data[i] == '-' || data[i] == '+'  ||
+			    data[i] == '*' || data[i] == '/'  ||
+			    data[i] == '=' || data[i] == '!'  ||
+			    data[i] == '<' || data[i] == '>'  ||
+				data[i] == '.')) /* [_a-zA-Z0-9] */
+		{
 			value  = data.substr(begin, j);
 			i--;
 			return;
