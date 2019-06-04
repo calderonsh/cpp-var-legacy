@@ -2567,6 +2567,7 @@ bool Var:: operator !=(int a) const { return operator !=(Var(a)); }
 bool Var:: operator !=(const char* a) const { return operator !=(Var(a)); }
 bool Var:: operator <(int a) const { return operator <(Var(a));}
 bool Var:: operator <(unsigned int a) const { return operator <(Var(a));}
+bool Var:: operator >(int a) const { return operator >(Var(a));}
 Var& Var:: operator [](int a) { return operator[](Var(a)); }
 Var& Var:: operator [](const char* a) { return operator[](std::string(a)); }
 Var& Var:: operator <<(int a) { return operator<<(Var(a)); }
