@@ -3,12 +3,12 @@ DESCRIPTION="Dynamically typed variables for C++"
 DEPENDS=g++
 
 MAJOR=0
-MINOR=7
+MINOR=8
 PATCH=1
 
 GPPINCS=
 GPPLIBS=
-GPPFLAGS=-std=c++11 -Wall -Werror -pedantic -O2
+GPPFLAGS=-std=c++11 -Wall -Werror -pedantic -g
 CC=g++
 
 OBJS= \

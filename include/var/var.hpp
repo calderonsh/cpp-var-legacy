@@ -76,7 +76,7 @@ class Var
 		Var(const std::string&);
 		~Var();
 
-		std::string encode() const;
+		std::string encode(bool prettyPrint = false, int deep = 1) const;
 		Var& decode(const Var&);
 
 		Var& operator =(const Var&);

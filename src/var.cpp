@@ -1530,16 +1530,16 @@ Var Var::slice(const Var& start, const Var& stop) const
 
 	if (this->internal_type == Var::string || this->internal_type == Var::map_iterator)
 	{
-		unsigned long begin = start;
-		unsigned long end = stop;
+		long begin = start;
+		long end = stop;
 
 		begin = begin < 0 ? begin + this->internal_string.size(): begin;
 		begin = begin < 0 ? 0 : begin;
-		begin = begin > this->internal_string.size()? this->internal_string.size() : begin;
+		begin = begin > (long)this->internal_string.size()? this->internal_string.size() : begin;
 
 		end = end < 0 ? end + this->internal_string.size() : end;
 		end = end < 0 ? 0 : end;
-		end = end > this->internal_string.size()? this->internal_string.size() : end;
+		end = end > (long)this->internal_string.size()? this->internal_string.size() : end;
 
 		result = this->internal_string.substr(begin, end - begin);
 	}
@@ -2141,10 +2141,21 @@ Var::operator const char*() const
 }
 
 
-std::string Var::encode() const
+std::string Var::encode(bool prettyPrint, int deep) const
 {
 	std::string result;
 	unsigned int pos = 0;
+
+	std::string indent = "";
+	std::string nl = "";
+
+	if (prettyPrint == true)
+	{
+		nl = "\n";
+		for (int i = 0; i < deep; i++) {
+			indent += "\t";
+		}
+	}
 
 	switch (this->internal_type)
 	{
@@ -2201,10 +2212,17 @@ std::string Var::encode() const
 		case Var::map:
 			if (this->internal_map.size() > 0)
 			{
-				result = "{";
+				result = "{" + nl;
 
 				for (Var::internal_map_type::const_iterator it = this->internal_map.begin(); it != this->internal_map.end(); it++) {
-					result = result + Var(it->first).encode() + ":" + (it->second->encode()) + ",";
+					result += indent + Var(it->first).encode(prettyPrint, deep+1) + (prettyPrint?" : ":":") + (it->second->encode(prettyPrint, deep +1)) + "," + nl;
+				}
+
+				if (prettyPrint == true)
+				{
+					result.resize(result.size() -1);
+					result[result.size()-1] = nl[0];
+					result += indent;
 				}
 
 				result[result.size()-1] = '}';
@@ -2218,10 +2236,17 @@ std::string Var::encode() const
 		case Var::vector:
 			if (this->internal_vector.size() > 0)
 			{
-				result = "[";
+				result = "[" + nl;
 
 				for (unsigned i = 0; i < this->internal_vector.size(); i++) {
-					result += (this->internal_vector[i]->encode() + ",");
+					result += indent + (this->internal_vector[i]->encode(prettyPrint, deep + 1) + "," + nl);
+				}
+
+				if (prettyPrint == true)
+				{
+					result.resize(result.size() -1);
+					result[result.size()-1] = nl[0];
+					result += indent;
 				}
 
 				result[result.size()-1] = ']';
@@ -2269,7 +2294,7 @@ void Var::decodeSub(const std::string& data, unsigned& i, Var& value)
 			 data[i] == '*' || data[i] == '/' ||
 			 data[i] == '=' || data[i] == '!' ||
 			 data[i] == '<' || data[i] == '>'
-			) /* [_a-zA-Z] */
+			)
 		{
 			Var::decodeSymbol(data, i, value.internal_string);
 
